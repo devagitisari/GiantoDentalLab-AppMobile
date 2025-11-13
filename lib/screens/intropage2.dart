@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:team_project/screens/get_started.dart';
 
 class IntroPage2 extends StatelessWidget {
   const IntroPage2({super.key});
@@ -16,7 +15,6 @@ class IntroPage2 extends StatelessWidget {
             fit: BoxFit.cover,
           ),
         ),
-
         child: Stack(
           children: [
             Align(
@@ -31,20 +29,15 @@ class IntroPage2 extends StatelessWidget {
                       Colors.white.withOpacity(0.5),
                       Colors.white,
                     ],
-                    stops: [
-                      0.0,
-                      0.5,
-                      1.5,
-                    ]
+                    stops: const [0.0, 0.5, 1.5],
                   ),
                 ),
               ),
             ),
-
             Align(
               alignment: Alignment.bottomCenter,
               child: Padding(
-                padding: const EdgeInsets.only(bottom: 40),
+                padding: const EdgeInsets.only(bottom: 60),
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
@@ -52,10 +45,10 @@ class IntroPage2 extends StatelessWidget {
                       padding: const EdgeInsets.only(bottom: 60),
                       child: Column(
                         children: [
-                          Text(
+                          const Text(
                             'Kembalikan Senyuman yang Layak Anda Dapatkan',
                             textAlign: TextAlign.center,
-                            style: const TextStyle(
+                            style: TextStyle(
                               color: Color(0xFF0C3345),
                               fontSize: 24,
                               fontFamily: 'Poppins',
@@ -65,12 +58,12 @@ class IntroPage2 extends StatelessWidget {
                             ),
                           ),
                           const SizedBox(height: 20),
-                          Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 20),
+                          const Padding(
+                            padding: EdgeInsets.symmetric(horizontal: 20),
                             child: Text(
                               'Kembalikan senyuman manis anda bersama Gianto Dental Lab dengan pelayanan yang ramah dan profesional',
                               textAlign: TextAlign.center,
-                              style: const TextStyle(
+                              style: TextStyle(
                                 color: Color(0xFF0C3345),
                                 fontSize: 16,
                                 fontFamily: 'Poppins',
@@ -82,37 +75,8 @@ class IntroPage2 extends StatelessWidget {
                         ],
                       ),
                     ),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 20),
-                      child: SizedBox(
-                        width: double.infinity,
-                        height: 56,
-                        child: ElevatedButton(
-                          onPressed: () {
-                            Navigator.push(
-                            context,
-                            MaterialPageRoute(builder: (context) => GetStarted()),
-                          ); //utk pindah halaman ke getstarted maaaaa~
-                          },
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: const Color(0xFF0C3345),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                            elevation: 0,
-                          ),
-                          child: const Text(
-                            'Mulai Sekarang',
-                            style: const TextStyle(
-                              color: Colors.white,
-                              fontSize: 20,
-                              fontFamily: 'Poppins',
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
+                    // Tombol dihapus tapi padding bawah tetap dipertahankan
+                    const SizedBox(height: 20),
                   ],
                 ),
               ),
