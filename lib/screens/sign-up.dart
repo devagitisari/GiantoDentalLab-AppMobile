@@ -1,19 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:team_project/screens/form-alamat.dart';
+import 'package:team_project/screens/home-page.dart';
 import 'package:team_project/screens/login-page.dart';
 
-// Fungsi untuk login dengan Google
-  Future<void> _signInWithGoogle() async {
-    final GoogleSignIn googleSignIn = GoogleSignIn();
-    try {
-      final GoogleSignInAccount? account = await googleSignIn.signIn();
-      if (account != null) {
-        print('Login berhasil dengan akun: ${account.email}');
-      }
-    } catch (error) {
-      print('Gagal login: $error');
-    }
-  }
 
 class SignInScreen extends StatelessWidget {
   const SignInScreen({super.key});
@@ -93,18 +85,126 @@ const authOutlineInputBorder = OutlineInputBorder(
   borderRadius: BorderRadius.all(Radius.circular(10)),
 );
 
-class SignInForm extends StatelessWidget {
+class PelangganService {
+  final CollectionReference _pelangganCollection =
+      FirebaseFirestore.instance.collection('pelanggan');
+
+  Future<void> tambahPelanggan(Map<String, dynamic> data) async {
+    await _pelangganCollection.add(data);
+  }
+}
+
+class SignInForm extends StatefulWidget {
   const SignInForm({super.key});
+
+  @override
+  _SignInFormState createState() => _SignInFormState();
+}
+
+class _SignInFormState extends State<SignInForm> {
+  final _namaController = TextEditingController();
+  final _emailController = TextEditingController();
+  final _passwordController = TextEditingController();
+  final _noTelpController = TextEditingController();
+
+  bool _isLoading = false;
+
+  Future<void> signUp() async {
+    setState(() => _isLoading = true);
+    try {
+      final auth = FirebaseAuth.instance;
+
+      // buat akun
+      UserCredential userCredential = await auth.createUserWithEmailAndPassword(
+        email: _emailController.text.trim(),
+        password: _passwordController.text.trim(),
+      );
+      final user = userCredential.user;
+
+      // simpan data dasar pelanggan (belum ada alamat)
+      await FirebaseFirestore.instance.collection('pelanggan').doc(user!.uid).set({
+        'id_pelanggan': user.uid,
+        'nama_pelanggan': _namaController.text.trim(),
+        'email': _emailController.text.trim(),
+        'no_telp': _noTelpController.text.trim(),
+        'alamat': '',
+        'password': _passwordController.text.trim(),
+        'created_at': FieldValue.serverTimestamp(),
+      });
+
+      // lanjut ke isi alamat
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (_) => IsiAlamat(uid: user.uid)),
+      );
+    } on FirebaseAuthException catch (e) {
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text("❌ ${e.message}")));
+    } finally {
+      setState(() => _isLoading = false);
+    }
+  }
+
+  Future<void> _signInWithGoogle() async {
+    try {
+      final GoogleSignIn googleSignIn = GoogleSignIn();
+      final GoogleSignInAccount? googleUser = await googleSignIn.signIn();
+      if (googleUser == null) return;
+
+      final GoogleSignInAuthentication googleAuth = await googleUser.authentication;
+      final credential = GoogleAuthProvider.credential(
+        accessToken: googleAuth.accessToken,
+        idToken: googleAuth.idToken,
+      );
+
+      UserCredential userCredential =
+          await FirebaseAuth.instance.signInWithCredential(credential);
+      final user = userCredential.user;
+      if (user == null) throw Exception("Gagal login Google");
+
+      final docRef = FirebaseFirestore.instance.collection('pelanggan').doc(user.uid);
+      final docSnap = await docRef.get();
+
+      if (!docSnap.exists) {
+        await docRef.set({
+          'id_pelanggan': user.uid,
+          'nama_pelanggan': user.displayName ?? '',
+          'email': user.email,
+          'password': '',
+          'alamat': '',
+          'no_telp': '',
+          'created_at': FieldValue.serverTimestamp(),
+        });
+      }
+
+      final userData = await docRef.get();
+      final alamat = userData['alamat'] ?? '';
+
+      if (alamat.isEmpty) {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (_) => IsiAlamat(uid: user.uid)),
+        );
+      } else {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (_) => HomePage()),
+        );
+      }
+    } catch (error) {
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text("❌ Gagal login Google: $error")));
+    }
+  }
+
 
   @override
   Widget build(BuildContext context) {
     return Form(
       child: Column(
         children: [
-          //form nama
           TextFormField(
-            onSaved: (nama) {},
-            onChanged: (nama) {},
+            controller: _namaController,
             textInputAction: TextInputAction.next,
             decoration: InputDecoration(
               hintText: "Masukkan nama",
@@ -132,13 +232,10 @@ class SignInForm extends StatelessWidget {
               )
             ),
           ),
-
           const SizedBox(height: 24),
-
           //form email
           TextFormField(
-            onSaved: (email) {},
-            onChanged: (email) {},
+            controller: _emailController,
             textInputAction: TextInputAction.next,
             decoration: InputDecoration(
               hintText: "Masukkan email anda",
@@ -168,11 +265,41 @@ class SignInForm extends StatelessWidget {
           ),
 
           const SizedBox(height: 24),
+          
+          TextFormField(
+            controller: _noTelpController,
+            textInputAction: TextInputAction.next,
+            decoration: InputDecoration(
+              hintText: "Masukkan nomor telepon anda",
+              hintStyle: const TextStyle(
+                fontSize: 12,
+                fontFamily: 'Poppins',
+                color: Color(0xFF999999)
+              ),
+              labelText: "Nomor Telepon",
+              labelStyle: const TextStyle(
+                fontSize: 18,
+                fontFamily: 'Poppins',
+                fontWeight: FontWeight.w600,
+                color: Color(0xFF0C3345)
+              ),
+              floatingLabelBehavior: FloatingLabelBehavior.always,
+              contentPadding: const EdgeInsets.symmetric(
+                horizontal: 24,
+                vertical: 16,
+              ),
+              border: authOutlineInputBorder,
+              enabledBorder: authOutlineInputBorder,
+              focusedBorder: authOutlineInputBorder.copyWith(
+                borderSide: const BorderSide(color: Color(0xFF999999))
+              )
+            ),
+          ),
 
+          const SizedBox(height: 24),
           //form pw
           TextFormField(
-            onSaved: (password) {},
-            onChanged: (password) {},
+            controller: _passwordController,
             textInputAction: TextInputAction.next,
             decoration: InputDecoration(
               hintText: "Masukkan kata sandi anda",
@@ -200,10 +327,11 @@ class SignInForm extends StatelessWidget {
               )
             ),
           ),
-
+          
           const SizedBox(height: 60),
           ElevatedButton(
-            onPressed: () {},
+            onPressed: _isLoading ? null : signUp,
+            
             style: ElevatedButton.styleFrom(
               elevation: 0,
               backgroundColor: const Color(0xFF0C3345),
@@ -214,7 +342,7 @@ class SignInForm extends StatelessWidget {
               ),
             ),
             child: const Text(
-              "Daftar Akun",
+              "Continue",
               style: TextStyle(
                 fontSize: 14,
                 fontFamily: 'Poppins',
