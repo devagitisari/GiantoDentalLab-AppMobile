@@ -1,19 +1,26 @@
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:team_project/screens/sign-up.dart';
+import 'package:team_project/screens/home-page.dart';
+
 
 // Fungsi untuk login dengan Google
-  Future<void> _signInWithGoogle() async {
-    final GoogleSignIn googleSignIn = GoogleSignIn();
-    try {
-      final GoogleSignInAccount? account = await googleSignIn.signIn();
-      if (account != null) {
-        print('Login berhasil dengan akun: ${account.email}');
-      }
-    } catch (error) {
-      print('Gagal login: $error');
+ Future<void> _signInWithGoogle(BuildContext context) async {
+  final GoogleSignIn googleSignIn = GoogleSignIn();
+  try {
+    final GoogleSignInAccount? account = await googleSignIn.signIn();
+    if (account != null) {
+      print('Login berhasil dengan akun: ${account.email}');
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => HomePage()),
+      );
     }
+  } catch (error) {
+    print('Gagal login: $error');
   }
+}
+
 
 class LoginInScreen extends StatelessWidget {
   const LoginInScreen({super.key});
@@ -169,7 +176,12 @@ class LogInForm extends StatelessWidget {
 
           const SizedBox(height: 60),
           ElevatedButton(
-            onPressed: () {},
+              onPressed: () {
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(builder: (context) => HomePage()),
+                );
+              },
             style: ElevatedButton.styleFrom(
               elevation: 0,
               backgroundColor: const Color(0xFF0C3345),
@@ -194,7 +206,9 @@ class LogInForm extends StatelessWidget {
             width: double.infinity,
             height: 50,
             child: ElevatedButton(
-              onPressed: _signInWithGoogle,
+              onPressed: () async {
+                await _signInWithGoogle(context);
+              },
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.white,
                 elevation: 0,

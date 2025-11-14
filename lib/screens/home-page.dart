@@ -1,4 +1,7 @@
+<<<<<<< HEAD
 
+=======
+>>>>>>> 7c1527d38777c2febcd63f85b35f9ba095843dd2
 import 'package:flutter/material.dart';
 
 class HomePage extends StatelessWidget {
@@ -840,4 +843,8 @@ class HomePage extends StatelessWidget {
       ],
     );
   }
+<<<<<<< HEAD
 }
+=======
+}
+>>>>>>> 7c1527d38777c2febcd63f85b35f9ba095843dd2

@@ -32,11 +32,7 @@ class IntroPage1 extends StatelessWidget {
                       Colors.white.withOpacity(0.5),
                       Colors.white,
                     ],
-                    stops: [
-                      0.0,
-                      0.5,
-                      1.5,
-                    ]
+                    stops: const [0.0, 0.5, 1.5],
                   ),
                 ),
               ),
@@ -46,7 +42,7 @@ class IntroPage1 extends StatelessWidget {
             Align(
               alignment: Alignment.bottomCenter,
               child: Padding(
-                padding: const EdgeInsets.only(bottom: 40),
+                padding: const EdgeInsets.only(bottom: 60),
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
@@ -54,10 +50,10 @@ class IntroPage1 extends StatelessWidget {
                       padding: const EdgeInsets.only(bottom: 60),
                       child: Column(
                         children: [
-                          Text(
+                          const Text(
                             'Gianto Dental Lab',
                             textAlign: TextAlign.center,
-                            style: const TextStyle(
+                            style: TextStyle(
                               color: Color(0xFF0C3345),
                               fontSize: 24,
                               fontFamily: 'Poppins',
@@ -67,12 +63,12 @@ class IntroPage1 extends StatelessWidget {
                             ),
                           ),
                           const SizedBox(height: 20),
-                          Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 20),
+                          const Padding(
+                            padding: EdgeInsets.symmetric(horizontal: 20),
                             child: Text(
                               'Ahli dalam pembuatan gigi tiruan, retainer, dan layanan perawatan gigi dengan hasil alami dan berkualitas tinggi.',
                               textAlign: TextAlign.center,
-                              style: const TextStyle(
+                              style: TextStyle(
                                 color: Color(0xFF0C3345),
                                 fontSize: 16,
                                 fontFamily: 'Poppins',
@@ -84,34 +80,7 @@ class IntroPage1 extends StatelessWidget {
                         ],
                       ),
                     ),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 20),
-                      child: SizedBox(
-                        width: double.infinity,
-                        height: 56,
-                        child: ElevatedButton(
-                          onPressed: () {
-                            
-                          },
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: const Color(0xFF0C3345),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                            elevation: 30,
-                          ),
-                          child: const Text(
-                            'Next',
-                            style: const TextStyle(
-                              color: Colors.white,
-                              fontSize: 20,
-                              fontFamily: 'Poppins',
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
+                    const SizedBox(height: 20),
                   ],
                 ),
               ),
