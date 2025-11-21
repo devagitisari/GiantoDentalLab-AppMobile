@@ -59,7 +59,7 @@ class LoginInScreen extends StatelessWidget {
                 const SizedBox(height: 26),
                 const Text(
                   'Log In',
-                  style: const TextStyle(
+                  style: TextStyle(
                     color: Color(0xFF0C3345),
                     fontSize: 26,
                     fontFamily: 'Poppins',
@@ -72,7 +72,7 @@ class LoginInScreen extends StatelessWidget {
                 const Text(
                   'Selamat datang kembali! Masukkan email dan kata sandi anda untuk masuk',
                   textAlign: TextAlign.left,
-                  style: const TextStyle(
+                  style: TextStyle(
                     color: Color(0xFF0C3345),
                     fontSize: 12,
                     fontFamily: 'Poppins',
@@ -246,7 +246,7 @@ class LogInForm extends StatelessWidget {
 }
 
 class GpnyaAkunText extends StatelessWidget {
-  const GpnyaAkunText({Key? key,}) : super(key: key);
+  const GpnyaAkunText({super.key,});
 
   @override
   Widget build(BuildContext context) {

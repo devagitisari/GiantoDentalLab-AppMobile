@@ -83,7 +83,7 @@ class _IsiAlamatState extends State<IsiAlamat> {
                 const SizedBox(height: 26),
                 const Text(
                   'Sign Up',
-                  style: const TextStyle(
+                  style: TextStyle(
                     color: Color(0xFF0C3345),
                     fontSize: 26,
                     fontFamily: 'Poppins',
@@ -96,7 +96,7 @@ class _IsiAlamatState extends State<IsiAlamat> {
                 const Text(
                   'Daftar akun dan mulai perawatan gigi anda bersama Gianto Dental Lab',
                   textAlign: TextAlign.left,
-                  style: const TextStyle(
+                  style: TextStyle(
                     color: Color(0xFF0C3345),
                     fontSize: 12,
                     fontFamily: 'Poppins',
