@@ -1,10 +1,8 @@
-<<<<<<< HEAD
-
-=======
->>>>>>> 7c1527d38777c2febcd63f85b35f9ba095843dd2
 import 'package:flutter/material.dart';
 
 class HomePage extends StatelessWidget {
+  const HomePage({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -115,7 +113,7 @@ class HomePage extends StatelessWidget {
               Positioned(
                 left: 223,
                 top: 513,
-                child: Container(
+                child: SizedBox(
                   width: 38,
                   height: 38,
                   child: Stack(
@@ -317,7 +315,7 @@ class HomePage extends StatelessWidget {
               Positioned(
                 left: 34,
                 top: 513,
-                child: Container(
+                child: SizedBox(
                   width: 38,
                   height: 38,
                   child: Stack(
@@ -409,7 +407,7 @@ class HomePage extends StatelessWidget {
               Positioned(
                 left: 34,
                 top: 660,
-                child: Container(
+                child: SizedBox(
                   width: 38,
                   height: 38,
                   child: Stack(
@@ -485,7 +483,7 @@ class HomePage extends StatelessWidget {
               Positioned(
                 left: 223,
                 top: 660,
-                child: Container(
+                child: SizedBox(
                   width: 38,
                   height: 38,
                   child: Stack(
@@ -729,7 +727,7 @@ class HomePage extends StatelessWidget {
               Positioned(
                 left: 234,
                 top: 428,
-                child: Container(
+                child: SizedBox(
                   width: 85,
                   height: 22,
                   child: Stack(
@@ -843,8 +841,4 @@ class HomePage extends StatelessWidget {
       ],
     );
   }
-<<<<<<< HEAD
 }
-=======
-}
->>>>>>> 7c1527d38777c2febcd63f85b35f9ba095843dd2

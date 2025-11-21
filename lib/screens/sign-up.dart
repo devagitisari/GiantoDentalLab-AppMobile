@@ -44,7 +44,7 @@ class SignInScreen extends StatelessWidget {
                 const SizedBox(height: 26),
                 const Text(
                   'Sign Up',
-                  style: const TextStyle(
+                  style: TextStyle(
                     color: Color(0xFF0C3345),
                     fontSize: 26,
                     fontFamily: 'Poppins',
@@ -57,7 +57,7 @@ class SignInScreen extends StatelessWidget {
                 const Text(
                   'Daftar akun dan mulai perawatan gigi anda bersama Gianto Dental Lab',
                   textAlign: TextAlign.left,
-                  style: const TextStyle(
+                  style: TextStyle(
                     color: Color(0xFF0C3345),
                     fontSize: 12,
                     fontFamily: 'Poppins',
@@ -394,7 +394,7 @@ class _SignInFormState extends State<SignInForm> {
 }
 
 class PnyaAkunText extends StatelessWidget {
-  const PnyaAkunText({ Key? key,}) : super(key: key);
+  const PnyaAkunText({ super.key,});
 
   @override
   Widget build(BuildContext context) {
