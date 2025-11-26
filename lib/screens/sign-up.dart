@@ -6,7 +6,6 @@ import 'package:team_project/screens/form-alamat.dart';
 import 'package:team_project/screens/home-page.dart';
 import 'package:team_project/screens/login-page.dart';
 
-
 class SignInScreen extends StatelessWidget {
   const SignInScreen({super.key});
 
@@ -21,25 +20,8 @@ class SignInScreen extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const SizedBox(height: 80),
-                Row(
-                  children: [
-                    Container(
-                      decoration: const BoxDecoration(
-                        color: Color(0xFFE7E7E7),
-                        shape: BoxShape.circle,
-                      ),
-                      child: IconButton(
-                        icon: Image.asset(
-                          'assets/icons/arrow-back.png',
-                          width: 24,
-                          height: 24,
-                        ),
-                        onPressed: () => Navigator.pop(context),
-                      ),
-                    ),
-                  ],
-                ),
+                const SizedBox(height: 40),
+                Row(children: const [SizedBox(width: 48, height: 48)]),
 
                 const SizedBox(height: 26),
                 const Text(
@@ -66,10 +48,9 @@ class SignInScreen extends StatelessWidget {
                   ),
                 ),
 
-                SizedBox(height: MediaQuery.of(context).size.height * 0.05),
+                SizedBox(height: MediaQuery.of(context).size.height * 0.04),
                 SignInForm(),
-                SizedBox(height: MediaQuery.of(context).size.height * 0.2),
-                const SizedBox(height: 16),
+                const SizedBox(height: 160),
                 const PnyaAkunText(),
               ],
             ),
@@ -86,8 +67,8 @@ const authOutlineInputBorder = OutlineInputBorder(
 );
 
 class PelangganService {
-  final CollectionReference _pelangganCollection =
-      FirebaseFirestore.instance.collection('pelanggan');
+  final CollectionReference _pelangganCollection = FirebaseFirestore.instance
+      .collection('pelanggan');
 
   Future<void> tambahPelanggan(Map<String, dynamic> data) async {
     await _pelangganCollection.add(data);
@@ -108,11 +89,240 @@ class _SignInFormState extends State<SignInForm> {
   final _noTelpController = TextEditingController();
 
   bool _isLoading = false;
+  bool _obscurePassword = true;
+
+  String passwordStrength = ""; // weak, medium, strong
+  Color strengthColor = Colors.red;
+  double strengthValue = 0.0; // 0.33 / 0.66 / 1.0
+
+  void showAwesomePopup({
+    required String title,
+    required String message,
+    Color color = const Color(0xFF0C3345),
+    IconData icon = Icons.info,
+  }) {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (_) {
+        return Dialog(
+          backgroundColor: Colors.transparent,
+          child: Stack(
+            alignment: Alignment.center,
+            children: [
+              // Glass card
+              Container(
+                margin: const EdgeInsets.only(top: 40),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 22,
+                  vertical: 26,
+                ),
+                decoration: BoxDecoration(
+                  color: Colors.white.withOpacity(0.92),
+                  borderRadius: BorderRadius.circular(22),
+                  boxShadow: [
+                    BoxShadow(
+                      blurRadius: 20,
+                      color: Colors.black.withOpacity(0.15),
+                      offset: const Offset(0, 10),
+                    ),
+                  ],
+                ),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const SizedBox(height: 40),
+                    Text(
+                      title,
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontFamily: 'Poppins',
+                        fontWeight: FontWeight.w700,
+                        fontSize: 18,
+                        color: color,
+                      ),
+                    ),
+                    const SizedBox(height: 10),
+                    Text(
+                      message,
+                      textAlign: TextAlign.center,
+                      style: const TextStyle(
+                        fontFamily: 'Poppins',
+                        fontSize: 14,
+                        color: Colors.black87,
+                      ),
+                    ),
+                    const SizedBox(height: 20),
+                    ElevatedButton(
+                      onPressed: () => Navigator.pop(context),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: color,
+                        foregroundColor: Colors.white,
+                        minimumSize: const Size(120, 45),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                      ),
+                      child: const Text(
+                        "Mengerti",
+                        style: TextStyle(
+                          fontFamily: 'Poppins',
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+
+              // Icon floating circle
+              Positioned(
+                top: 0,
+                child: CircleAvatar(
+                  radius: 40,
+                  backgroundColor: Colors.grey.shade300,
+                  child: Padding(
+                    padding: const EdgeInsets.only(
+                      top: 2,
+                    ), // kecil aja biar visual center
+                    child: Icon(icon, color: Colors.red, size: 50),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  void checkPasswordStrength(String password) {
+    bool hasUpper = password.contains(RegExp(r'[A-Z]'));
+    bool hasLower = password.contains(RegExp(r'[a-z]'));
+    bool hasNumber = password.contains(RegExp(r'[0-9]'));
+    bool hasSpecial = password.contains(RegExp(r'[!@#\$%^&*(),.?":{}|<>]'));
+
+    // STRONG
+    if (password.length >= 8 &&
+        hasUpper &&
+        hasLower &&
+        hasNumber &&
+        hasSpecial) {
+      setState(() {
+        passwordStrength = "Strong";
+        strengthColor = Colors.green;
+        strengthValue = 1.0; // full bar
+      });
+    }
+    // MEDIUM
+    else if (password.length >= 6 &&
+        (hasUpper || hasLower) &&
+        (hasNumber || hasSpecial)) {
+      setState(() {
+        passwordStrength = "Medium";
+        strengthColor = Colors.orange;
+        strengthValue = 0.66; // 2/3 bar
+      });
+    }
+    // WEAK
+    else {
+      setState(() {
+        passwordStrength = "Weak";
+        strengthColor = Colors.red;
+        strengthValue = 0.33; // 1/3 bar
+      });
+    }
+  }
 
   Future<void> signUp() async {
+    String nama = _namaController.text.trim();
+    String email = _emailController.text.trim();
+    String telp = _noTelpController.text.trim();
+    String password = _passwordController.text.trim();
+
+    // ❌ Validasi field kosong
+    if (nama.isEmpty || email.isEmpty || telp.isEmpty || password.isEmpty) {
+      showAwesomePopup(
+        title: "Data Belum Lengkap",
+        message: "Harap isi semua field sebelum melanjutkan.",
+        color: Color(0xFF0C3345),
+        icon: Icons.warning_amber_rounded,
+      );
+      return;
+    }
+
+    // Validasi email
+    if (!RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(email)) {
+      showAwesomePopup(
+        title: "Email Tidak Valid",
+        message: "Masukkan format email yang benar.",
+        color: Colors.red,
+        icon: Icons.error,
+      );
+      return;
+    }
+
+    // ❌ Validasi nomor telepon
+    if (!RegExp(r'^[0-9]{10,15}$').hasMatch(telp)) {
+      showAwesomePopup(
+        title: "Nomor Telepon Tidak Valid",
+        message:
+            "Nomor telepon harus diawali 08 dan terdiri dari 10-15 digit angka.",
+        color: Color(0xFF0C3345),
+        icon: Icons.warning_amber_rounded,
+      );
+      return;
+    }
+
+    // ❌ Validasi password
+    bool hasUpper = password.contains(RegExp(r'[A-Z]'));
+    bool hasLower = password.contains(RegExp(r'[a-z]'));
+    bool hasNumber = password.contains(RegExp(r'[0-9]'));
+    bool hasSpecial = password.contains(RegExp(r'[!@#\$%^&*(),.?":{}|<>]'));
+
+    if (password.length < 8 ||
+        !hasUpper ||
+        !hasLower ||
+        !hasNumber ||
+        !hasSpecial) {
+      showAwesomePopup(
+        title: "Password Tidak Valid",
+        message:
+            "Password harus huruf kecil, huruf besar, angka dan simbol dengan minimal 8 karakter.",
+        color: Color(0xFF0C3345),
+        icon: Icons.warning_amber_rounded,
+      );
+      return;
+    }
+
     setState(() => _isLoading = true);
     try {
       final auth = FirebaseAuth.instance;
+
+      // VALIDASI PASSWORD WAJIB
+      String password = _passwordController.text.trim();
+
+      bool hasUpper = password.contains(RegExp(r'[A-Z]'));
+      bool hasLower = password.contains(RegExp(r'[a-z]'));
+      bool hasNumber = password.contains(RegExp(r'[0-9]'));
+      bool hasSpecial = password.contains(RegExp(r'[!@#\$%^&*(),.?":{}|<>]'));
+
+      if (password.length < 8 ||
+          !hasUpper ||
+          !hasLower ||
+          !hasNumber ||
+          !hasSpecial) {
+        setState(() => _isLoading = false);
+
+        showAwesomePopup(
+          title: "Password Tidak Valid",
+          message:
+              "Password harus huruf kecil, huruf besar, angka dan simbol dengan minimal 8 karakter.",
+          color: Color(0xFF0C3345),
+          icon: Icons.warning_amber_rounded,
+        );
+        return; // STOP SIGN UP
+      }
 
       // buat akun
       UserCredential userCredential = await auth.createUserWithEmailAndPassword(
@@ -122,15 +332,36 @@ class _SignInFormState extends State<SignInForm> {
       final user = userCredential.user;
 
       // simpan data dasar pelanggan (belum ada alamat)
-      await FirebaseFirestore.instance.collection('pelanggan').doc(user!.uid).set({
-        'id_pelanggan': user.uid,
-        'nama_pelanggan': _namaController.text.trim(),
-        'email': _emailController.text.trim(),
-        'no_telp': _noTelpController.text.trim(),
-        'alamat': '',
-        'password': _passwordController.text.trim(),
-        'created_at': FieldValue.serverTimestamp(),
-      });
+      await FirebaseFirestore.instance
+          .collection('pelanggan')
+          .doc(user!.uid)
+          .set({
+            'id_pelanggan': user.uid,
+            'nama_pelanggan': _namaController.text.trim(),
+            'email': _emailController.text.trim(),
+            'password': _passwordController.text.trim(),
+            'alamat': {
+              'detail_jalan': "",
+              'gmaps': {'latitude': "", 'longitude': "", 'link': ""},
+              'kecamatan': "",
+              'kelurahan': "",
+              'kode_pos': "",
+              'kota': "",
+              'nama_jalan': "",
+              'provinsi': "",
+            },
+            'no_telp': _noTelpController.text.trim(),
+            'created_at': FieldValue.serverTimestamp(),
+          });
+
+      showAwesomePopup(
+        title: "Akun Berhasil Dibuat!",
+        message: "Silakan lengkapi alamat anda untuk melanjutkan.",
+        color: Colors.green,
+        icon: Icons.check_circle_rounded,
+      );
+
+      await Future.delayed(const Duration(seconds: 1));
 
       // lanjut ke isi alamat
       Navigator.pushReplacement(
@@ -138,8 +369,12 @@ class _SignInFormState extends State<SignInForm> {
         MaterialPageRoute(builder: (_) => IsiAlamat(uid: user.uid)),
       );
     } on FirebaseAuthException catch (e) {
-      ScaffoldMessenger.of(context)
-          .showSnackBar(SnackBar(content: Text("❌ ${e.message}")));
+      showAwesomePopup(
+        title: "Terjadi Kesalahan",
+        message: e.message ?? "Terjadi kesalahan.",
+        color: const Color(0xFF0C3345),
+        icon: Icons.warning_amber_rounded,
+      );
     } finally {
       setState(() => _isLoading = false);
     }
@@ -151,18 +386,21 @@ class _SignInFormState extends State<SignInForm> {
       final GoogleSignInAccount? googleUser = await googleSignIn.signIn();
       if (googleUser == null) return;
 
-      final GoogleSignInAuthentication googleAuth = await googleUser.authentication;
+      final GoogleSignInAuthentication googleAuth =
+          await googleUser.authentication;
       final credential = GoogleAuthProvider.credential(
         accessToken: googleAuth.accessToken,
         idToken: googleAuth.idToken,
       );
 
-      UserCredential userCredential =
-          await FirebaseAuth.instance.signInWithCredential(credential);
+      UserCredential userCredential = await FirebaseAuth.instance
+          .signInWithCredential(credential);
       final user = userCredential.user;
       if (user == null) throw Exception("Gagal login Google");
 
-      final docRef = FirebaseFirestore.instance.collection('pelanggan').doc(user.uid);
+      final docRef = FirebaseFirestore.instance
+          .collection('pelanggan')
+          .doc(user.uid);
       final docSnap = await docRef.get();
 
       if (!docSnap.exists) {
@@ -171,16 +409,26 @@ class _SignInFormState extends State<SignInForm> {
           'nama_pelanggan': user.displayName ?? '',
           'email': user.email,
           'password': '',
-          'alamat': '',
+          'alamat': {
+            'detail_jalan': "",
+            'gmaps': {'latitude': "", 'longitude': "", 'link': ""},
+            'kecamatan': "",
+            'kelurahan': "",
+            'kode_pos': "",
+            'kota': "",
+            'nama_jalan': "",
+            'provinsi': "",
+          },
           'no_telp': '',
           'created_at': FieldValue.serverTimestamp(),
         });
       }
 
-      final userData = await docRef.get();
-      final alamat = userData['alamat'] ?? '';
+      final data = docSnap.data() as Map<String, dynamic>;
+      final alamat = data['alamat'] ?? {};
 
-      if (alamat.isEmpty) {
+      if (alamat is Map &&
+          (alamat['nama_jalan'] == null || alamat['nama_jalan'] == "")) {
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(builder: (_) => IsiAlamat(uid: user.uid)),
@@ -188,15 +436,19 @@ class _SignInFormState extends State<SignInForm> {
       } else {
         Navigator.pushReplacement(
           context,
-          MaterialPageRoute(builder: (_) => HomePage()),
+          MaterialPageRoute(builder: (_) => HomePage(uid: user.uid)),
         );
       }
-    } catch (error) {
-      ScaffoldMessenger.of(context)
-          .showSnackBar(SnackBar(content: Text("❌ Gagal login Google: $error")));
+    } on FirebaseAuthException catch (e) {
+      showAwesomePopup(
+        title: "Gagal Membuat Akun",
+        message: e.message ?? "Terjadi kesalahan saat membuat akun.",
+        color: Color(0xFF0C3345),
+        icon: Icons.warning_amber_rounded,
+      );
+      return; // penting agar proses stop setelah error
     }
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -211,14 +463,14 @@ class _SignInFormState extends State<SignInForm> {
               hintStyle: const TextStyle(
                 fontSize: 12,
                 fontFamily: 'Poppins',
-                color: Color(0xFF999999)
+                color: Color(0xFF999999),
               ),
               labelText: "Nama",
               labelStyle: const TextStyle(
                 fontSize: 18,
                 fontFamily: 'Poppins',
                 fontWeight: FontWeight.w600,
-                color: Color(0xFF0C3345)
+                color: Color(0xFF0C3345),
               ),
               floatingLabelBehavior: FloatingLabelBehavior.always,
               contentPadding: const EdgeInsets.symmetric(
@@ -228,8 +480,8 @@ class _SignInFormState extends State<SignInForm> {
               border: authOutlineInputBorder,
               enabledBorder: authOutlineInputBorder,
               focusedBorder: authOutlineInputBorder.copyWith(
-                borderSide: const BorderSide(color: Color(0xFF999999))
-              )
+                borderSide: const BorderSide(color: Color(0xFF999999)),
+              ),
             ),
           ),
           const SizedBox(height: 24),
@@ -242,14 +494,14 @@ class _SignInFormState extends State<SignInForm> {
               hintStyle: const TextStyle(
                 fontSize: 12,
                 fontFamily: 'Poppins',
-                color: Color(0xFF999999)
+                color: Color(0xFF999999),
               ),
               labelText: "Email",
               labelStyle: const TextStyle(
                 fontSize: 18,
                 fontFamily: 'Poppins',
                 fontWeight: FontWeight.w600,
-                color: Color(0xFF0C3345)
+                color: Color(0xFF0C3345),
               ),
               floatingLabelBehavior: FloatingLabelBehavior.always,
               contentPadding: const EdgeInsets.symmetric(
@@ -259,13 +511,13 @@ class _SignInFormState extends State<SignInForm> {
               border: authOutlineInputBorder,
               enabledBorder: authOutlineInputBorder,
               focusedBorder: authOutlineInputBorder.copyWith(
-                borderSide: const BorderSide(color: Color(0xFF999999))
-              )
+                borderSide: const BorderSide(color: Color(0xFF999999)),
+              ),
             ),
           ),
 
           const SizedBox(height: 24),
-          
+
           TextFormField(
             controller: _noTelpController,
             textInputAction: TextInputAction.next,
@@ -274,14 +526,14 @@ class _SignInFormState extends State<SignInForm> {
               hintStyle: const TextStyle(
                 fontSize: 12,
                 fontFamily: 'Poppins',
-                color: Color(0xFF999999)
+                color: Color(0xFF999999),
               ),
               labelText: "Nomor Telepon",
               labelStyle: const TextStyle(
                 fontSize: 18,
                 fontFamily: 'Poppins',
                 fontWeight: FontWeight.w600,
-                color: Color(0xFF0C3345)
+                color: Color(0xFF0C3345),
               ),
               floatingLabelBehavior: FloatingLabelBehavior.always,
               contentPadding: const EdgeInsets.symmetric(
@@ -291,29 +543,31 @@ class _SignInFormState extends State<SignInForm> {
               border: authOutlineInputBorder,
               enabledBorder: authOutlineInputBorder,
               focusedBorder: authOutlineInputBorder.copyWith(
-                borderSide: const BorderSide(color: Color(0xFF999999))
-              )
+                borderSide: const BorderSide(color: Color(0xFF999999)),
+              ),
             ),
           ),
 
           const SizedBox(height: 24),
-          //form pw
-          TextFormField(
+          TextField(
             controller: _passwordController,
-            textInputAction: TextInputAction.next,
+            obscureText: _obscurePassword,
+            onChanged: (value) {
+              checkPasswordStrength(value);
+            },
             decoration: InputDecoration(
+              labelText: "Password",
               hintText: "Masukkan kata sandi anda",
               hintStyle: const TextStyle(
                 fontSize: 12,
                 fontFamily: 'Poppins',
-                color: Color(0xFF999999)
+                color: Color(0xFF999999),
               ),
-              labelText: "Kata Sandi",
               labelStyle: const TextStyle(
                 fontSize: 18,
                 fontFamily: 'Poppins',
                 fontWeight: FontWeight.w600,
-                color: Color(0xFF0C3345)
+                color: Color(0xFF0C3345),
               ),
               floatingLabelBehavior: FloatingLabelBehavior.always,
               contentPadding: const EdgeInsets.symmetric(
@@ -322,16 +576,57 @@ class _SignInFormState extends State<SignInForm> {
               ),
               border: authOutlineInputBorder,
               enabledBorder: authOutlineInputBorder,
-              focusedBorder: authOutlineInputBorder.copyWith(
-                borderSide: const BorderSide(color: Color(0xFF999999))
-              )
+              focusedBorder: authOutlineInputBorder,
+
+              // 🔥 ICON SHOW/HIDE PASSWORD
+              suffixIcon: IconButton(
+                icon: Icon(
+                  _obscurePassword ? Icons.visibility_off : Icons.visibility,
+                  color: const Color(0xFF999999),
+                ),
+                onPressed: () {
+                  setState(() {
+                    _obscurePassword = !_obscurePassword;
+                  });
+                },
+              ),
             ),
           ),
-          
-          const SizedBox(height: 60),
+
+          // 🔥 INDIKATOR PASSWORD STRENGTH
+          if (passwordStrength.isNotEmpty)
+            Padding(
+              padding: const EdgeInsets.only(top: 10),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(10),
+                    child: LinearProgressIndicator(
+                      value: strengthValue,
+                      minHeight: 8,
+                      backgroundColor: Colors.grey.shade300,
+                      valueColor: AlwaysStoppedAnimation(strengthColor),
+                    ),
+                  ),
+                  const SizedBox(height: 6),
+                  Text(
+                    passwordStrength,
+                    style: TextStyle(
+                      fontFamily: 'Poppins',
+                      fontSize: 12,
+                      fontWeight: FontWeight.w600,
+                      color: strengthColor,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+
+          const SizedBox(height: 30),
           ElevatedButton(
             onPressed: _isLoading ? null : signUp,
-            
+
             style: ElevatedButton.styleFrom(
               elevation: 0,
               backgroundColor: const Color(0xFF0C3345),
@@ -369,10 +664,7 @@ class _SignInFormState extends State<SignInForm> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   // simple placeholder for Google logo
-                  Image.asset(
-                    'assets/images/logoGoogle.png',
-                      height: 24,
-                  ),
+                  Image.asset('assets/images/logoGoogle.png', height: 24),
                   const SizedBox(width: 12),
                   const Text(
                     'Lanjutkan dengan Google',
@@ -394,7 +686,7 @@ class _SignInFormState extends State<SignInForm> {
 }
 
 class PnyaAkunText extends StatelessWidget {
-  const PnyaAkunText({ super.key,});
+  const PnyaAkunText({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -402,10 +694,10 @@ class PnyaAkunText extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         const Text(
-          "Belum memiliki akun?",
+          "Belum memiliki akun? ",
           style: TextStyle(
             color: Color(0xFF757575),
-            fontSize: 14,
+            fontSize: 12,
             fontFamily: 'Poppins',
             fontWeight: FontWeight.w500,
           ),
@@ -413,20 +705,20 @@ class PnyaAkunText extends StatelessWidget {
         GestureDetector(
           onTap: () {
             Navigator.push(
-              context, 
-              MaterialPageRoute(builder: (context) => LoginInScreen()),
+              context,
+              MaterialPageRoute(builder: (context) => LoginScreen()),
             );
           },
           child: const Text(
             "Log In",
             style: TextStyle(
               color: Color(0xFF0C3345),
-              fontSize: 14,
+              fontSize: 12,
               fontFamily: 'Poppins',
               fontWeight: FontWeight.w700,
             ),
           ),
-        )
+        ),
       ],
     );
   }

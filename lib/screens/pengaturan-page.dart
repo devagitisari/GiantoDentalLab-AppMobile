@@ -28,6 +28,8 @@ class FigmaToCodeApp extends StatelessWidget {
 }
 
 class Pengaturan extends StatelessWidget {
+  const Pengaturan({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -168,7 +170,7 @@ class Pengaturan extends StatelessWidget {
                   width: 315,
                   height: 51,
                   decoration: ShapeDecoration(
-                    color: Color(0xFF0FF0101),
+                    color: Color(0xff0ff0101),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(10),
                     ),

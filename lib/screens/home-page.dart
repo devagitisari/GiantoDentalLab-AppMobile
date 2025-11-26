@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 
 class HomePage extends StatelessWidget {
-  const HomePage({super.key});
+  final String uid; // tambahkan ini
+  const HomePage({super.key, required this.uid}); // wajib diisi
+
 
   @override
   Widget build(BuildContext context) {

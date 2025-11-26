@@ -18,10 +18,6 @@ pluginManagement {
 }
 
 plugins {
-<<<<<<< HEAD
-=======
-    id("com.google.gms.google-services") version "4.4.2" apply false
->>>>>>> 7c1527d38777c2febcd63f85b35f9ba095843dd2
     id("dev.flutter.flutter-plugin-loader") version "1.0.0"
     id("com.android.application") version "8.9.1" apply false
     id("org.jetbrains.kotlin.android") version "2.1.0" apply false

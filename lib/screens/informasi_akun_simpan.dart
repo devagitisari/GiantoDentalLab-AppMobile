@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'pengaturan-page.dart';
 
 class InformasiAkunSimpan extends StatefulWidget {
+  const InformasiAkunSimpan({super.key});
+
   @override
   State<InformasiAkunSimpan> createState() => _InformasiAkunSimpanState();
 }
