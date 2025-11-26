@@ -65,7 +65,7 @@ class IntroPage2 extends StatelessWidget {
                               textAlign: TextAlign.center,
                               style: TextStyle(
                                 color: Color(0xFF0C3345),
-                                fontSize: 16,
+                                fontSize: 14,
                                 fontFamily: 'Poppins',
                                 fontWeight: FontWeight.w400,
                                 height: 1.50,
