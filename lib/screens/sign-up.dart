@@ -6,56 +6,94 @@ import 'package:team_project/screens/form-alamat.dart';
 import 'package:team_project/screens/home-page.dart';
 import 'package:team_project/screens/login-page.dart';
 
-class SignInScreen extends StatelessWidget {
+class SignInScreen extends StatefulWidget {
   const SignInScreen({super.key});
+
+  @override
+  State<SignInScreen> createState() => _SignInScreenState();
+}
+
+class _SignInScreenState extends State<SignInScreen> {
+  bool _isLoading = false;
+
+  Widget loadingOverlay() {
+    return Container(
+      color: Colors.black.withOpacity(0.4),
+      child: const Center(
+        child: CircularProgressIndicator(
+          color: Color(0xFF0C3345),
+          strokeWidth: 3,
+        ),
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
-          child: SingleChildScrollView(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const SizedBox(height: 40),
-                Row(children: const [SizedBox(width: 48, height: 48)]),
-
-                const SizedBox(height: 26),
-                const Text(
-                  'Sign Up',
-                  style: TextStyle(
-                    color: Color(0xFF0C3345),
-                    fontSize: 26,
-                    fontFamily: 'Poppins',
-                    fontWeight: FontWeight.w700,
-                    letterSpacing: 1,
+      body: Stack(
+        children: [
+          // Konten scrollable di SafeArea
+          SafeArea(
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const SizedBox(height: 40),
+                  Row(children: const [SizedBox(width: 48, height: 48)]),
+                  const SizedBox(height: 26),
+                  const Text(
+                    'Sign Up',
+                    style: TextStyle(
+                      color: Color(0xFF0C3345),
+                      fontSize: 26,
+                      fontFamily: 'Poppins',
+                      fontWeight: FontWeight.w700,
+                      letterSpacing: 1,
+                    ),
                   ),
-                ),
-
-                const SizedBox(height: 12),
-                const Text(
-                  'Daftar akun dan mulai perawatan gigi anda bersama Gianto Dental Lab',
-                  textAlign: TextAlign.left,
-                  style: TextStyle(
-                    color: Color(0xFF0C3345),
-                    fontSize: 12,
-                    fontFamily: 'Poppins',
-                    fontWeight: FontWeight.w400,
-                    letterSpacing: 1,
+                  const SizedBox(height: 12),
+                  const Text(
+                    'Daftar akun dan mulai perawatan gigi anda bersama Gianto Dental Lab',
+                    style: TextStyle(
+                      color: Color(0xFF0C3345),
+                      fontSize: 12,
+                      fontFamily: 'Poppins',
+                      fontWeight: FontWeight.w400,
+                      letterSpacing: 1,
+                    ),
                   ),
-                ),
-
-                SizedBox(height: MediaQuery.of(context).size.height * 0.04),
-                SignInForm(),
-                const SizedBox(height: 160),
-                const PnyaAkunText(),
-              ],
+                  SizedBox(height: MediaQuery.of(context).size.height * 0.04),
+                  SignInForm(
+                    onLoadingChanged: (loading) {
+                      setState(() {
+                        _isLoading = loading;
+                      });
+                    },
+                  ),
+                  const SizedBox(height: 160),
+                  const PnyaAkunText(),
+                ],
+              ),
             ),
           ),
-        ),
+
+          // Fullscreen loading overlay
+          if (_isLoading)
+            Positioned.fill(
+              child: Container(
+                color: Colors.black.withOpacity(0.4),
+                child: const Center(
+                  child: CircularProgressIndicator(
+                    color: Color(0xFF0C3345),
+                    strokeWidth: 3,
+                  ),
+                ),
+              ),
+            ),
+        ],
       ),
     );
   }
@@ -76,7 +114,8 @@ class PelangganService {
 }
 
 class SignInForm extends StatefulWidget {
-  const SignInForm({super.key});
+  final Function(bool)? onLoadingChanged;
+  const SignInForm({super.key, this.onLoadingChanged});
 
   @override
   _SignInFormState createState() => _SignInFormState();
@@ -196,18 +235,6 @@ class _SignInFormState extends State<SignInForm> {
     );
   }
 
-    Widget loadingOverlay() {
-    return Container(
-      color: Colors.black.withOpacity(0.4),
-      child: const Center(
-        child: CircularProgressIndicator(
-          color: Color(0xFF0C3345),
-          strokeWidth: 3,
-        ),
-      ),
-    );
-  }
-
   void checkPasswordStrength(String password) {
     bool hasUpper = password.contains(RegExp(r'[A-Z]'));
     bool hasLower = password.contains(RegExp(r'[a-z]'));
@@ -307,7 +334,7 @@ class _SignInFormState extends State<SignInForm> {
       return;
     }
 
-    setState(() => _isLoading = true);
+    widget.onLoadingChanged?.call(true);
     try {
       final auth = FirebaseAuth.instance;
 
@@ -388,15 +415,19 @@ class _SignInFormState extends State<SignInForm> {
         icon: Icons.warning_amber_rounded,
       );
     } finally {
-      setState(() => _isLoading = false);
+      widget.onLoadingChanged?.call(false);
     }
   }
 
   Future<void> _signInWithGoogle() async {
+    widget.onLoadingChanged?.call(true); // mulai loading
     try {
       final GoogleSignIn googleSignIn = GoogleSignIn();
       final GoogleSignInAccount? googleUser = await googleSignIn.signIn();
-      if (googleUser == null) return;
+      if (googleUser == null) {
+        widget.onLoadingChanged?.call(false);
+        return;
+      }
 
       final GoogleSignInAuthentication googleAuth =
           await googleUser.authentication;
@@ -436,11 +467,14 @@ class _SignInFormState extends State<SignInForm> {
         });
       }
 
-      final data = docSnap.data() as Map<String, dynamic>;
-      final alamat = data['alamat'] ?? {};
+      final data = docSnap.data();
+      final alamat =
+          (data is Map<String, dynamic> &&
+              data['alamat'] is Map<String, dynamic>)
+          ? data['alamat'] as Map<String, dynamic>
+          : <String, dynamic>{};
 
-      if (alamat is Map &&
-          (alamat['nama_jalan'] == null || alamat['nama_jalan'] == "")) {
+      if (alamat['nama_jalan'] == null || alamat['nama_jalan'] == "") {
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(builder: (_) => IsiAlamat(uid: user.uid)),
@@ -458,7 +492,8 @@ class _SignInFormState extends State<SignInForm> {
         color: Color(0xFF0C3345),
         icon: Icons.warning_amber_rounded,
       );
-      return; // penting agar proses stop setelah error
+    } finally {
+      widget.onLoadingChanged?.call(false); // stop loading
     }
   }
 
@@ -637,7 +672,7 @@ class _SignInFormState extends State<SignInForm> {
 
           const SizedBox(height: 30),
           ElevatedButton(
-            onPressed: _isLoading ? null : signUp,
+            onPressed: (_isLoading) ? null : signUp,
 
             style: ElevatedButton.styleFrom(
               elevation: 0,
