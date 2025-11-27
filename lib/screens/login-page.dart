@@ -112,8 +112,24 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 
+  Widget loadingOverlay() {
+    return Container(
+      color: Colors.black.withOpacity(0.4),
+      child: const Center(
+        child: CircularProgressIndicator(
+          color: Color(0xFF0C3345),
+          strokeWidth: 3,
+        ),
+      ),
+    );
+  }
+
   Future<void> signIn() async {
     setState(() => _isLoading = true);
+
+    // ⬅ biar UI sempat rebuild & overlay muncul
+    await Future.delayed(const Duration(milliseconds: 150));
+
     try {
       final auth = FirebaseAuth.instance;
       UserCredential userCredential = await auth.signInWithEmailAndPassword(
@@ -156,10 +172,18 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   Future<void> _signInWithGoogle() async {
+    setState(() => _isLoading = true);
+    await Future.delayed(
+      const Duration(milliseconds: 150),
+    ); // biar overlay tampil
+
     try {
       final googleSignIn = GoogleSignIn();
       final googleUser = await googleSignIn.signIn();
-      if (googleUser == null) return;
+      if (googleUser == null) {
+        setState(() => _isLoading = false);
+        return;
+      }
 
       final googleAuth = await googleUser.authentication;
       final credential = GoogleAuthProvider.credential(
@@ -197,7 +221,6 @@ class _LoginScreenState extends State<LoginScreen> {
           'created_at': FieldValue.serverTimestamp(),
         });
 
-        // ambil ulang data setelah set
         final newSnap = await docRef.get();
         final data = newSnap.data() as Map<String, dynamic>;
         final alamat = data['alamat'] ?? {};
@@ -236,218 +259,235 @@ class _LoginScreenState extends State<LoginScreen> {
         color: Colors.red,
         icon: Icons.error_rounded,
       );
+    } finally {
+      setState(() => _isLoading = false);
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.white,
-      body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
-          child: SingleChildScrollView(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const SizedBox(height: 40),
-                Row(children: const [SizedBox(width: 48, height: 48)]),
-                const SizedBox(height: 26),
-                const Text(
-                  'Log In',
-                  style: TextStyle(
-                    color: Color(0xFF0C3345),
-                    fontSize: 26,
-                    fontFamily: 'Poppins',
-                    fontWeight: FontWeight.w700,
-                    letterSpacing: 1,
-                  ),
-                ),
-                const SizedBox(height: 12),
-                const Text(
-                  'Masuk untuk melanjutkan perawatan gigi anda bersama Gianto Dental Lab',
-                  textAlign: TextAlign.left,
-                  style: TextStyle(
-                    color: Color(0xFF0C3345),
-                    fontSize: 12,
-                    fontFamily: 'Poppins',
-                    fontWeight: FontWeight.w400,
-                    letterSpacing: 1,
-                  ),
-                ),
-                SizedBox(height: MediaQuery.of(context).size.height * 0.04),
+    return Stack(
+      children: [
+        Scaffold(
+          backgroundColor: Colors.white,
+          body: SafeArea(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+              child: SingleChildScrollView(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const SizedBox(height: 40),
 
-                // === EMAIL FIELD ===
-                TextFormField(
-                  controller: _emailController,
-                  textInputAction: TextInputAction.next,
-                  decoration: InputDecoration(
-                    hintText: "Masukkan email anda",
-                    labelText: "Email",
-                    floatingLabelBehavior: FloatingLabelBehavior.always,
+                    // LOGO
+                    Row(children: const [SizedBox(width: 48, height: 48)]),
+                    const SizedBox(height: 26),
 
-                    // SAMAKAN DENGAN SIGN UP
-                    labelStyle: const TextStyle(
-                      fontSize: 14,
-                      color: Color(0xFF0C3345),
-                      fontWeight: FontWeight.w600,
-                      fontFamily: "Poppins",
-                    ),
-                    hintStyle: const TextStyle(
-                      fontSize: 13,
-                      color: Color(0xFF999999),
-                      fontFamily: "Poppins",
-                    ),
-
-                    contentPadding: const EdgeInsets.symmetric(
-                      horizontal: 24,
-                      vertical: 16,
-                    ),
-                    border: authOutlineInputBorder,
-                    enabledBorder: authOutlineInputBorder,
-                    focusedBorder: authOutlineInputBorder,
-                  ),
-                ),
-
-                const SizedBox(height: 24),
-
-                // === PASSWORD FIELD ===
-                TextFormField(
-                  controller: _passwordController,
-                  obscureText: _obscurePassword,
-                  decoration: InputDecoration(
-                    labelText: "Password",
-                    hintText: "Masukkan kata sandi anda",
-                    floatingLabelBehavior: FloatingLabelBehavior.always,
-
-                    // SAMAKAN DENGAN SIGN UP
-                    labelStyle: const TextStyle(
-                      fontSize: 14,
-                      color: Color(0xFF0C3345),
-                      fontWeight: FontWeight.w600,
-                      fontFamily: "Poppins",
-                    ),
-                    hintStyle: const TextStyle(
-                      fontSize: 13,
-                      color: Color(0xFF999999),
-                      fontFamily: "Poppins",
-                    ),
-
-                    contentPadding: const EdgeInsets.symmetric(
-                      horizontal: 24,
-                      vertical: 16,
-                    ),
-                    border: authOutlineInputBorder,
-                    enabledBorder: authOutlineInputBorder,
-                    focusedBorder: authOutlineInputBorder,
-
-                    suffixIcon: IconButton(
-                      icon: Icon(
-                        _obscurePassword
-                            ? Icons.visibility_off
-                            : Icons.visibility,
-                        color: const Color(0xFF999999),
-                      ),
-                      onPressed: () {
-                        setState(() {
-                          _obscurePassword = !_obscurePassword;
-                        });
-                      },
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 30),
-                ElevatedButton(
-                  onPressed: _isLoading ? null : signIn,
-                  style: ElevatedButton.styleFrom(
-                    elevation: 0,
-                    backgroundColor: const Color(0xFF0C3345),
-                    foregroundColor: Colors.white,
-                    minimumSize: const Size(double.infinity, 48),
-                    shape: const RoundedRectangleBorder(
-                      borderRadius: BorderRadius.all(Radius.circular(5)),
-                    ),
-                  ),
-                  child: const Text(
-                    "Continue",
-                    style: TextStyle(
-                      fontSize: 14,
-                      fontFamily: 'Poppins',
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 24),
-                SizedBox(
-                  width: double.infinity,
-                  height: 50,
-                  child: ElevatedButton(
-                    onPressed: _signInWithGoogle,
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.white,
-                      elevation: 0,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8),
-                        side: BorderSide(color: Colors.grey.shade300),
+                    const Text(
+                      'Log In',
+                      style: TextStyle(
+                        color: Color(0xFF0C3345),
+                        fontSize: 26,
+                        fontFamily: 'Poppins',
+                        fontWeight: FontWeight.w700,
+                        letterSpacing: 1,
                       ),
                     ),
-                    child: Row(
+
+                    const SizedBox(height: 12),
+
+                    const Text(
+                      'Masuk untuk melanjutkan perawatan gigi anda bersama Gianto Dental Lab',
+                      style: TextStyle(
+                        color: Color(0xFF0C3345),
+                        fontSize: 12,
+                        fontFamily: 'Poppins',
+                        fontWeight: FontWeight.w400,
+                        letterSpacing: 1,
+                      ),
+                    ),
+
+                    const SizedBox(height: 40),
+
+                    // EMAIL
+                    TextFormField(
+                      controller: _emailController,
+                      textInputAction: TextInputAction.next,
+                      decoration: InputDecoration(
+                        hintText: "Masukkan email anda",
+                        labelText: "Email",
+                        floatingLabelBehavior: FloatingLabelBehavior.always,
+                        labelStyle: const TextStyle(
+                          fontSize: 14,
+                          color: Color(0xFF0C3345),
+                          fontWeight: FontWeight.w600,
+                          fontFamily: "Poppins",
+                        ),
+                        hintStyle: const TextStyle(
+                          fontSize: 13,
+                          color: Color(0xFF999999),
+                          fontFamily: "Poppins",
+                        ),
+                        contentPadding: const EdgeInsets.symmetric(
+                          horizontal: 24,
+                          vertical: 16,
+                        ),
+                        border: authOutlineInputBorder,
+                        enabledBorder: authOutlineInputBorder,
+                        focusedBorder: authOutlineInputBorder,
+                      ),
+                    ),
+
+                    const SizedBox(height: 24),
+
+                    // PASSWORD
+                    TextFormField(
+                      controller: _passwordController,
+                      obscureText: _obscurePassword,
+                      decoration: InputDecoration(
+                        labelText: "Password",
+                        hintText: "Masukkan kata sandi anda",
+                        floatingLabelBehavior: FloatingLabelBehavior.always,
+                        labelStyle: const TextStyle(
+                          fontSize: 14,
+                          color: Color(0xFF0C3345),
+                          fontWeight: FontWeight.w600,
+                          fontFamily: "Poppins",
+                        ),
+                        hintStyle: const TextStyle(
+                          fontSize: 13,
+                          color: Color(0xFF999999),
+                          fontFamily: "Poppins",
+                        ),
+                        contentPadding: const EdgeInsets.symmetric(
+                          horizontal: 24,
+                          vertical: 16,
+                        ),
+                        border: authOutlineInputBorder,
+                        enabledBorder: authOutlineInputBorder,
+                        focusedBorder: authOutlineInputBorder,
+                        suffixIcon: IconButton(
+                          icon: Icon(
+                            _obscurePassword
+                                ? Icons.visibility_off
+                                : Icons.visibility,
+                            color: const Color(0xFF999999),
+                          ),
+                          onPressed: () {
+                            setState(() {
+                              _obscurePassword = !_obscurePassword;
+                            });
+                          },
+                        ),
+                      ),
+                    ),
+
+                    const SizedBox(height: 30),
+
+                    // CONTINUE
+                    ElevatedButton(
+                      onPressed: _isLoading ? null : signIn,
+                      style: ElevatedButton.styleFrom(
+                        elevation: 0,
+                        backgroundColor: const Color(0xFF0C3345),
+                        foregroundColor: Colors.white,
+                        minimumSize: const Size(double.infinity, 48),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(5),
+                        ),
+                      ),
+                      child: const Text(
+                        "Continue",
+                        style: TextStyle(
+                          fontSize: 14,
+                          fontFamily: 'Poppins',
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ),
+
+                    const SizedBox(height: 24),
+
+                    // GOOGLE LOGIN
+                    SizedBox(
+                      width: double.infinity,
+                      height: 50,
+                      child: ElevatedButton(
+                        onPressed: _signInWithGoogle,
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.white,
+                          elevation: 0,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8),
+                            side: BorderSide(color: Colors.grey.shade300),
+                          ),
+                        ),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Image.asset(
+                              'assets/images/logoGoogle.png',
+                              height: 24,
+                            ),
+                            const SizedBox(width: 12),
+                            const Text(
+                              'Lanjutkan dengan Google',
+                              style: TextStyle(
+                                color: Color(0xFF0C3345),
+                                fontSize: 14,
+                                fontFamily: 'Poppins',
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+
+                    const SizedBox(height: 310),
+
+                    Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Image.asset('assets/images/logoGoogle.png', height: 24),
-                        const SizedBox(width: 12),
                         const Text(
-                          'Lanjutkan dengan Google',
+                          "Tidak memiliki akun? ",
                           style: TextStyle(
-                            color: Color(0xFF0C3345),
-                            fontSize: 14,
                             fontFamily: 'Poppins',
-                            fontWeight: FontWeight.w500,
+                            fontSize: 12,
+                            color: Color(0xFF757575),
+                          ),
+                        ),
+                        GestureDetector(
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (_) => const SignInScreen(),
+                              ),
+                            );
+                          },
+                          child: const Text(
+                            "Sign Up",
+                            style: TextStyle(
+                              fontFamily: 'Poppins',
+                              fontSize: 12,
+                              color: Color(0xFF0C3345),
+                              fontWeight: FontWeight.w600,
+                            ),
                           ),
                         ),
                       ],
                     ),
-                  ),
-                ),
-
-                const SizedBox(height: 320),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    const Text(
-                      "Tidak memiliki akun? ",
-                      style: TextStyle(
-                        fontFamily: 'Poppins',
-                        fontSize: 12,
-                        color: Color(0xFF444444),
-                      ),
-                    ),
-                    GestureDetector(
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (_) => const SignInScreen(),
-                          ),
-                        );
-                      },
-                      child: const Text(
-                        "Sign Up",
-                        style: TextStyle(
-                          fontFamily: 'Poppins',
-                          fontSize: 12,
-                          color: Color(0xFF0C3345),
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                    ),
                   ],
                 ),
-              ],
+              ),
             ),
           ),
         ),
-      ),
+
+        // 🔥 FULLSCREEN OVERLAY TANPA TERPOTONG
+        if (_isLoading) Positioned.fill(child: loadingOverlay()),
+      ],
     );
   }
 }

@@ -196,6 +196,18 @@ class _SignInFormState extends State<SignInForm> {
     );
   }
 
+    Widget loadingOverlay() {
+    return Container(
+      color: Colors.black.withOpacity(0.4),
+      child: const Center(
+        child: CircularProgressIndicator(
+          color: Color(0xFF0C3345),
+          strokeWidth: 3,
+        ),
+      ),
+    );
+  }
+
   void checkPasswordStrength(String password) {
     bool hasUpper = password.contains(RegExp(r'[A-Z]'));
     bool hasLower = password.contains(RegExp(r'[a-z]'));
@@ -694,7 +706,7 @@ class PnyaAkunText extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         const Text(
-          "Belum memiliki akun? ",
+          "Sudah memiliki akun? ",
           style: TextStyle(
             color: Color(0xFF757575),
             fontSize: 12,
