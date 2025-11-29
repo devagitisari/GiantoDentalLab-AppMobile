@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'pengaturan-page.dart';
 
 class InformasiAkunSimpan extends StatefulWidget {
+  const InformasiAkunSimpan({super.key});
+
   @override
   State<InformasiAkunSimpan> createState() => _InformasiAkunSimpanState();
 }
@@ -12,7 +14,8 @@ class _InformasiAkunSimpanState extends State<InformasiAkunSimpan> {
   final noTelpController = TextEditingController(text: "0877889284");
   final emailController = TextEditingController(text: "devagitisar49@gmail.com");
   final alamatController = TextEditingController(
-    text: "Jl. Haji Maksum (Sebelah TPA Al Kautsar)\nSAWANGAN, KOTA DEPOK, JAWA BARAT, ID 116511",
+    text:
+        "Jl. Haji Maksum (Sebelah TPA Al Kautsar)\nSAWANGAN, KOTA DEPOK, JAWA BARAT, ID 116511",
   );
 
   @override
@@ -24,14 +27,13 @@ class _InformasiAkunSimpanState extends State<InformasiAkunSimpan> {
         child: SingleChildScrollView(
           padding: const EdgeInsets.symmetric(horizontal: 20),
           child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              const SizedBox(height: 15),
+              const SizedBox(height: 20),
 
-              // HEADER (Back + Title + Simpan)
+              // ROW BACK + JUDUL
               Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  // BACK BUTTON
                   Opacity(
                     opacity: 0.65,
                     child: Container(
@@ -47,68 +49,71 @@ class _InformasiAkunSimpanState extends State<InformasiAkunSimpan> {
                       ),
                     ),
                   ),
-
-                  // TITLE TENGAH
+                  const SizedBox(width: 15),
                   const Text(
                     "Informasi Akun",
                     style: TextStyle(
                       fontSize: 20,
-                      color: Colors.black,
                       fontFamily: 'Poppins',
                       fontWeight: FontWeight.w600,
                     ),
                   ),
-
-                  // TOMBOL SIMPAN (Kanan)
-                  GestureDetector(
-                    onTap: () {
-                      Navigator.pushReplacement(
-                        context,
-                        MaterialPageRoute(builder: (_) => Pengaturan()),
-                      );
-                    },
-                    child: Container(
-                      width: 80,
-                      height: 33,
-                      decoration: BoxDecoration(
-                        color: const Color(0xFF4CAF50),
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      child: const Center(
-                        child: Text(
-                          "Simpan",
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 13,
-                            fontFamily: 'Poppins',
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-
-              const SizedBox(height: 35),
-
-              // FORM
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  inputField("Nama Pengguna", usernameController),
-                  const SizedBox(height: 20),
-                  inputField("Nama", namaController),
-                  const SizedBox(height: 20),
-                  inputField("No Telepon", noTelpController),
-                  const SizedBox(height: 20),
-                  inputField("Email", emailController),
-                  const SizedBox(height: 20),
-                  inputField("Alamat", alamatController, maxLines: null),
                 ],
               ),
 
               const SizedBox(height: 40),
+
+              // FORM WRAPPER (BATAS LEBAR FIX)
+              SizedBox(
+                width: 330, // ⬅ kotak form dibatasi supaya tidak terlalu panjang
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    inputField("Nama Pengguna", usernameController),
+                    const SizedBox(height: 20),
+                    inputField("Nama", namaController),
+                    const SizedBox(height: 20),
+                    inputField("No Telepon", noTelpController),
+                    const SizedBox(height: 20),
+                    inputField("Email", emailController),
+                    const SizedBox(height: 20),
+                    inputField("Alamat", alamatController, maxLines: null),
+                  ],
+                ),
+              ),
+
+              const SizedBox(height: 35),
+
+              // TOMBOL SIMPAN
+              GestureDetector(
+                onTap: () {
+                  Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(builder: (_) => Pengaturan()),
+                  );
+                },
+                child: Container(
+                  width: 120,
+                  height: 40,
+                  decoration: BoxDecoration(
+                    color: const Color(0xFF43A047),
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: const Center(
+                    child: Text(
+                      "Simpan",
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 14,
+                        fontFamily: 'Poppins',
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+
+              const SizedBox(height: 50),
             ],
           ),
         ),
@@ -116,7 +121,7 @@ class _InformasiAkunSimpanState extends State<InformasiAkunSimpan> {
     );
   }
 
-  // INPUT FIELD REUSABLE
+  // INPUT FIELD
   Widget inputField(String label, TextEditingController controller,
       {int? maxLines = 1}) {
     return Column(
@@ -134,7 +139,7 @@ class _InformasiAkunSimpanState extends State<InformasiAkunSimpan> {
         const SizedBox(height: 6),
         TextField(
           controller: controller,
-          maxLines: maxLines,
+          maxLines: maxLines, // ⬅ otomatis tinggi mengikuti panjang teks
           decoration: InputDecoration(
             filled: true,
             fillColor: Colors.white,

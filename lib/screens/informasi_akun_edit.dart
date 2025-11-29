@@ -21,6 +21,8 @@ class FigmaToCodeApp extends StatelessWidget {
 }
 
 class InformasiAkunEdit extends StatelessWidget {
+  const InformasiAkunEdit({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Column(
