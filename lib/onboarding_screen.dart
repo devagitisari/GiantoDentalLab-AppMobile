@@ -58,7 +58,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
               padding: const EdgeInsets.symmetric(horizontal: 20),
               child: SizedBox(
                 width: double.infinity,
-                height: 56,
+                height: 48,
                 child: ElevatedButton(
                   onPressed: () {
                     if (onLastPage) {
@@ -86,7 +86,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                     onLastPage ? 'Mulai Sekarang' : 'Next',
                     style: const TextStyle(
                       color: Colors.white,
-                      fontSize: 20,
+                      fontSize: 14,
                       fontFamily: 'Poppins',
                       fontWeight: FontWeight.w600,
                     ),

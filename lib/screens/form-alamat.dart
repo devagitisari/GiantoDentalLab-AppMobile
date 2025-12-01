@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'home_page.dart';
+import 'package:team_project/screens/home-page.dart';
 
 const authOutlineInputBorder = OutlineInputBorder(
   borderSide: BorderSide(color: Color(0xFFD0D0D0)),
@@ -8,8 +9,8 @@ const authOutlineInputBorder = OutlineInputBorder(
 );
 
 class PelangganService {
-  final CollectionReference _pelangganCollection =
-      FirebaseFirestore.instance.collection('pelanggan');
+  final CollectionReference _pelangganCollection = FirebaseFirestore.instance
+      .collection('pelanggan');
 
   Future<void> tambahPelanggan(Map<String, dynamic> data) async {
     await _pelangganCollection.add(data);
@@ -31,27 +32,42 @@ class _IsiAlamatState extends State<IsiAlamat> {
   Future<void> _simpanData() async {
     setState(() => _isLoading = true);
     try {
+      final user = FirebaseAuth.instance.currentUser;
+      if (user == null) throw Exception("User belum login");
+
       await FirebaseFirestore.instance
           .collection('pelanggan')
-          .doc(widget.uid)
+          .doc(user.uid)
           .update({
-        'alamat': _alamatController.text.trim(),
+        'alamat': {
+          'nama_jalan': _alamatController.text.trim(),
+          'detail_jalan': "",
+          'gmaps': {'latitude': "", 'longitude': "", 'link': ""},
+          'kecamatan': "",
+          'kelurahan': "",
+          'kode_pos': "",
+          'kota': "",
+          'provinsi': "",
+        }
       });
 
-      ScaffoldMessenger.of(context)
-          .showSnackBar(const SnackBar(content: Text("✅ Data berhasil disimpan")));
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("✅ Data berhasil disimpan")),
+      );
 
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(builder: (_) => HomePage()),
+        MaterialPageRoute(builder: (_) => HomePage(uid: user.uid)),
       );
     } catch (e) {
-      ScaffoldMessenger.of(context)
-          .showSnackBar(SnackBar(content: Text("❌ Gagal: $e")));
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("❌ Gagal: $e")),
+      );
     } finally {
       setState(() => _isLoading = false);
     }
   }
+
 
   @override
   Widget build(BuildContext context) {
@@ -61,66 +77,66 @@ class _IsiAlamatState extends State<IsiAlamat> {
         child: Column(
           children: [
             const SizedBox(height: 80),
-                Row(
-                  children: [
-                    Container(
-                      decoration: const BoxDecoration(
-                        color: Color(0xFFE7E7E7),
-                        shape: BoxShape.circle,
-                      ),
-                      child: IconButton(
-                        icon: Image.asset(
-                          'assets/icons/arrow-back.png',
-                          width: 24,
-                          height: 24,
-                        ),
-                        onPressed: () => Navigator.pop(context),
-                      ),
+            Row(
+              children: [
+                Container(
+                  decoration: const BoxDecoration(
+                    color: Color(0xFFE7E7E7),
+                    shape: BoxShape.circle,
+                  ),
+                  child: IconButton(
+                    icon: Image.asset(
+                      'assets/icons/arrow-back.png',
+                      width: 24,
+                      height: 24,
                     ),
-                  ],
-                ),
-
-                const SizedBox(height: 26),
-                const Text(
-                  'Sign Up',
-                  style: const TextStyle(
-                    color: Color(0xFF0C3345),
-                    fontSize: 26,
-                    fontFamily: 'Poppins',
-                    fontWeight: FontWeight.w700,
-                    letterSpacing: 1,
+                    onPressed: () => Navigator.pop(context),
                   ),
                 ),
+              ],
+            ),
 
-                const SizedBox(height: 12),
-                const Text(
-                  'Daftar akun dan mulai perawatan gigi anda bersama Gianto Dental Lab',
-                  textAlign: TextAlign.left,
-                  style: const TextStyle(
-                    color: Color(0xFF0C3345),
-                    fontSize: 12,
-                    fontFamily: 'Poppins',
-                    fontWeight: FontWeight.w400,
-                    letterSpacing: 1,
-                  ),
-                ),
+            const SizedBox(height: 26),
+            const Text(
+              'Sign Up',
+              style: TextStyle(
+                color: Color(0xFF0C3345),
+                fontSize: 26,
+                fontFamily: 'Poppins',
+                fontWeight: FontWeight.w700,
+                letterSpacing: 1,
+              ),
+            ),
+
+            const SizedBox(height: 12),
+            const Text(
+              'Daftar akun dan mulai perawatan gigi anda bersama Gianto Dental Lab',
+              textAlign: TextAlign.left,
+              style: TextStyle(
+                color: Color(0xFF0C3345),
+                fontSize: 12,
+                fontFamily: 'Poppins',
+                fontWeight: FontWeight.w400,
+                letterSpacing: 1,
+              ),
+            ),
 
             TextFormField(
-            controller: _alamatController,
-            textInputAction: TextInputAction.next,
-            decoration: InputDecoration(
+              controller: _alamatController,
+              textInputAction: TextInputAction.next,
+              decoration: InputDecoration(
                 hintText: "Masukkan alamat anda",
                 hintStyle: const TextStyle(
                   fontSize: 12,
                   fontFamily: 'Poppins',
-                  color: Color(0xFF999999)
+                  color: Color(0xFF999999),
                 ),
                 labelText: "Alamat",
                 labelStyle: const TextStyle(
                   fontSize: 18,
                   fontFamily: 'Poppins',
                   fontWeight: FontWeight.w600,
-                  color: Color(0xFF0C3345)
+                  color: Color(0xFF0C3345),
                 ),
                 floatingLabelBehavior: FloatingLabelBehavior.always,
                 contentPadding: const EdgeInsets.symmetric(
@@ -130,14 +146,14 @@ class _IsiAlamatState extends State<IsiAlamat> {
                 border: authOutlineInputBorder,
                 enabledBorder: authOutlineInputBorder,
                 focusedBorder: authOutlineInputBorder.copyWith(
-                  borderSide: const BorderSide(color: Color(0xFF999999))
-                )
+                  borderSide: const BorderSide(color: Color(0xFF999999)),
+                ),
               ),
             ),
 
             ElevatedButton(
               onPressed: _isLoading ? null : _simpanData,
-              
+
               style: ElevatedButton.styleFrom(
                 elevation: 0,
                 backgroundColor: const Color(0xFF0C3345),
@@ -147,8 +163,8 @@ class _IsiAlamatState extends State<IsiAlamat> {
                   borderRadius: BorderRadius.all(Radius.circular(5)),
                 ),
               ),
-              child: Text(_isLoading ? "Menyimpan..." :
-                "Continue",
+              child: Text(
+                _isLoading ? "Menyimpan..." : "Continue",
                 style: TextStyle(
                   fontSize: 14,
                   fontFamily: 'Poppins',
