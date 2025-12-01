@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'home-page.dart';
+import 'home_page.dart';
 
 const authOutlineInputBorder = OutlineInputBorder(
   borderSide: BorderSide(color: Color(0xFFD0D0D0)),
