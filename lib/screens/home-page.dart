@@ -4,7 +4,6 @@ class HomePage extends StatelessWidget {
   final String uid; // tambahkan ini
   const HomePage({super.key, required this.uid}); // wajib diisi
 
-
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -63,7 +62,7 @@ class HomePage extends StatelessWidget {
                         blurRadius: 4,
                         offset: Offset(0, 4),
                         spreadRadius: 0,
-                      )
+                      ),
                     ],
                   ),
                 ),
@@ -85,7 +84,7 @@ class HomePage extends StatelessWidget {
                         blurRadius: 12,
                         offset: Offset(0, 4),
                         spreadRadius: 0,
-                      )
+                      ),
                     ],
                   ),
                 ),
@@ -107,7 +106,7 @@ class HomePage extends StatelessWidget {
                         blurRadius: 12,
                         offset: Offset(0, 4),
                         spreadRadius: 0,
-                      )
+                      ),
                     ],
                   ),
                 ),
@@ -130,7 +129,10 @@ class HomePage extends StatelessWidget {
                             gradient: LinearGradient(
                               begin: Alignment(0.50, -0.00),
                               end: Alignment(0.50, 1.00),
-                              colors: [const Color(0xFF0C3345), const Color(0xFF155A7A)],
+                              colors: [
+                                const Color(0xFF0C3345),
+                                const Color(0xFF155A7A),
+                              ],
                             ),
                             shape: OvalBorder(),
                           ),
@@ -171,7 +173,7 @@ class HomePage extends StatelessWidget {
                         blurRadius: 12,
                         offset: Offset(0, 4),
                         spreadRadius: 0,
-                      )
+                      ),
                     ],
                   ),
                 ),
@@ -193,7 +195,7 @@ class HomePage extends StatelessWidget {
                         blurRadius: 12,
                         offset: Offset(0, 4),
                         spreadRadius: 0,
-                      )
+                      ),
                     ],
                   ),
                 ),
@@ -208,7 +210,10 @@ class HomePage extends StatelessWidget {
                     gradient: LinearGradient(
                       begin: Alignment(0.00, 0.50),
                       end: Alignment(1.00, 0.50),
-                      colors: [const Color(0xFF0C3345), const Color(0xFF1D7EAB)],
+                      colors: [
+                        const Color(0xFF0C3345),
+                        const Color(0xFF1D7EAB),
+                      ],
                     ),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(15),
@@ -332,7 +337,10 @@ class HomePage extends StatelessWidget {
                             gradient: LinearGradient(
                               begin: Alignment(0.50, -0.00),
                               end: Alignment(0.50, 1.00),
-                              colors: [const Color(0xFF0C3345), const Color(0xFF155A7A)],
+                              colors: [
+                                const Color(0xFF0C3345),
+                                const Color(0xFF155A7A),
+                              ],
                             ),
                             shape: OvalBorder(),
                           ),
@@ -363,7 +371,7 @@ class HomePage extends StatelessWidget {
                                         blurRadius: 4,
                                         offset: Offset(0, 4),
                                         spreadRadius: 0,
-                                      )
+                                      ),
                                     ],
                                   ),
                                 ),
@@ -400,7 +408,10 @@ class HomePage extends StatelessWidget {
                     gradient: LinearGradient(
                       begin: Alignment(0.50, -0.00),
                       end: Alignment(0.50, 1.00),
-                      colors: [const Color(0xFF0C3345), const Color(0xFF155A7A)],
+                      colors: [
+                        const Color(0xFF0C3345),
+                        const Color(0xFF155A7A),
+                      ],
                     ),
                     shape: OvalBorder(),
                   ),
@@ -424,7 +435,10 @@ class HomePage extends StatelessWidget {
                             gradient: LinearGradient(
                               begin: Alignment(0.50, -0.00),
                               end: Alignment(0.50, 1.00),
-                              colors: [const Color(0xFF0C3345), const Color(0xFF155A7A)],
+                              colors: [
+                                const Color(0xFF0C3345),
+                                const Color(0xFF155A7A),
+                              ],
                             ),
                             shape: OvalBorder(),
                           ),
@@ -455,7 +469,7 @@ class HomePage extends StatelessWidget {
                                         blurRadius: 4,
                                         offset: Offset(0, 4),
                                         spreadRadius: 0,
-                                      )
+                                      ),
                                     ],
                                   ),
                                 ),
@@ -500,7 +514,10 @@ class HomePage extends StatelessWidget {
                             gradient: LinearGradient(
                               begin: Alignment(0.50, -0.00),
                               end: Alignment(0.50, 1.00),
-                              colors: [const Color(0xFF0C3345), const Color(0xFF155A7A)],
+                              colors: [
+                                const Color(0xFF0C3345),
+                                const Color(0xFF155A7A),
+                              ],
                             ),
                             shape: OvalBorder(),
                           ),
@@ -524,7 +541,9 @@ class HomePage extends StatelessWidget {
                                   height: 33,
                                   decoration: BoxDecoration(
                                     image: DecorationImage(
-                                      image: NetworkImage("https://placehold.co/27x33"),
+                                      image: NetworkImage(
+                                        "https://placehold.co/27x33",
+                                      ),
                                       fit: BoxFit.cover,
                                     ),
                                   ),
@@ -764,7 +783,10 @@ class HomePage extends StatelessWidget {
                             gradient: LinearGradient(
                               begin: Alignment(0.50, -0.00),
                               end: Alignment(0.50, 1.00),
-                              colors: [const Color(0xFF0C3345), const Color(0xFF155A7A)],
+                              colors: [
+                                const Color(0xFF0C3345),
+                                const Color(0xFF155A7A),
+                              ],
                             ),
                             shape: OvalBorder(),
                           ),
@@ -826,7 +848,9 @@ class HomePage extends StatelessWidget {
                 left: 53,
                 top: 419,
                 child: Container(
-                  transform: Matrix4.identity()..translate(0.0, 0.0)..rotateZ(3.14),
+                  transform: Matrix4.identity()
+                    ..translate(0.0, 0.0)
+                    ..rotateZ(3.14),
                   width: 15,
                   height: 19,
                   decoration: BoxDecoration(

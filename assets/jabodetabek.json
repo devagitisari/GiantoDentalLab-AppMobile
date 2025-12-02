@@ -1,0 +1,1031 @@
+{
+  "DKI Jakarta": {
+    "Kepulauan Seribu": {
+      "Kepulauan Seribu Utara": [
+        "Pulau Panggang", "Pulau Kelapa", "Pulau Harapan"
+      ],
+      "Kepulauan Seribu Selatan": [
+        "Pulau Untung Jawa", "Pulau Tidung", "Pulau Pari"
+      ]
+    },
+    "Jakarta Pusat": {
+      "Gambir": [
+        "Gambir", "Cideng", "Petojo Utara", "Petojo Selatan",
+        "Kebon Kelapa", "Duri Pulo"
+      ],
+      "Sawah Besar": [
+        "Pasar Baru", "Karang Anyar", "Kartini", "Gunung Sahari Utara","Mangga Dua Selatan"
+      ],
+      "Kemayoran": [
+        "Kemayoran", "Kebon Kosong", "Harapan Mulia", "Serdang",
+        "Gunung Sahari Selatan", "Cempaka Baru", "Sumur Batu", "Utan Panjang"
+      ],
+      "Senen": [
+        "Senen", "Kenari", "Paseban",
+        "Kramat", "Kwitang", "Bungur"
+      ],
+      "Cempaka Putih": [
+        "Cempaka Putih Timur", "Cempaka Putih Barat", "Rawasari"
+      ],
+      "Menteng": [
+        "Menteng", "Pegangsaan", "Cikini", "Gondangdia", "Kebon Sirih"
+      ],
+      "Tanah Abang": [
+        "Gelora", "Bendungan Hilir","Karet Tengsin",
+        "Petamburan", "Kebon Melati", "Kebon Kacang", "Kampung Bali"
+      ],
+      "Johar Baru": [
+        "Johar Baru","Kampung Rawa","Galur","Tanah Tinggi"
+      ]
+    },
+    "Jakarta Utara": {
+      "Penjaringan": [
+        "Penjaringan", "Kamal Muara", "Kapuk Muara", "Pejagalan", "Pluit"
+      ],
+      "Tanjung Priok": [
+        "Tanjung Priok", "Sunter Jaya", "Papanggo", "Sungai Bambu",
+        "Kebon Bawang", "Sunter Agung", "Warakas"
+      ],
+      "Koja": [
+        "Koja", "Tugu Utara", "Lagoa", "Rawa Badak Utara","Tugu Selatan", "Rawa Badak Selatan"
+      ],
+      "Cilincing": [
+        "Cilincing", "Sukapura", "Marunda","Kalibaru",
+        "Semper Timur", "Rorotan", "Semper Barat"
+      ],
+      "Pademangan": [
+        "Pademangan Timur", "Pademangan Barat", "Ancol"
+      ],
+      "Kelapa Gading": [
+        "Kelapa Gading Timur", "Pegangsaan Dua","Kelapa Gading Barat"
+      ]
+    },
+    "Jakarta Barat": {
+      "Cengkareng": [
+        "Cengkareng Barat", "Duri Kosambi", "Rawa Buaya","Kedaung Kali Angke",
+        "Kapuk","Cengkareng Timur"
+      ],
+      "Grogol Petamburan": [
+        "Grogol", "Tanjung Duren Utara", "Tomang",
+        "Jelambar", "Tanjung Duren Selatan", "Jelambar Baru", "Wijaya Kusuma"
+      ],
+      "Taman Sari": [
+        "Taman Sari", "Krukut", "Maphar",
+        "Tangki", "Mangga Besar", "Keagungan", "Glodok", "Pinangsia"
+      ],
+      "Tambora": [
+        "Tambora", "Kali Anyar", "Duri Utara", "Tanah Sereal","Krendang",
+        "Jembatan Besi", "Angke", "Jembatan Lima", "Pekojan","Roa Malaka","Duri Selatan"
+      ],
+      "Kebon Jeruk": [
+        "Kebon Jeruk", "Sukabumi Utara", "Sukabumi Selatan", "Kelapa Dua",
+        "Duri Kepa", "Kedoya Utara", "Kedoya Selatan"
+      ],
+      "Kalideres": [
+        "Kalideres","Semanan","Tegal Alur",
+        "Kamal", "Pegadungan"
+      ],
+      "Pal Merah": [
+        "Palmerah", "Slipi", "Bambu Utara","Jatipulo",
+        "Kemanggisan", "Bambu Selatan"
+      ],
+      "Kembangan": [
+        "Kembangan Utara", "Meruya Utara", "Meruya Selatan","Srengseng",
+        "Joglo", "Kembangan Selatan"
+      ]
+    },
+    "Jakarta Selatan": {
+      "Tebet": [
+        "Tebet Timur", "Tebet Barat", "Menteng Dalam",
+        "Kebon Baru", "Bukit Duri", "Manggarai Selatan", "Manggarai"
+      ],
+      "Setiabudi": [
+        "Setiabudi", "Karet Semanggi", "Karet Kuningan", "Karet", "Menteng Atas",
+        "Pasar Manggis", "Guntur", "Kuningan Timur"
+      ],
+      "Mampang Prapatan": [
+        "Mampang Prapatan", "Bangka", "Pela Mampang", "Tegal Parang", "Kuningan Barat"
+      ],
+      "Pasar Minggu": [
+        "Pasar Minggu", "Jati Padang", "Cilandak Timur",
+        "Ragunan", "Pejaten Timur", "Pejaten Barat", "Kebagusan"
+      ],
+      "Kebayoran Lama": [
+        "Kebayoran Lama Utara", "Pondok Pinang",
+        "Cipulir","Grogol Utara", "Grogol Selatan", "Kebayoran Lama Selatan"
+      ],
+      "Cilandak": [
+        "Cilandak Barat", "Lebak Bulus", "Pondok Labu", "Gandaria Selatan", "Cipete Selatan"
+      ],
+      "Kebayoran Baru": [
+        "Melawai", "Gunung", "Kramat Pela", "Selong", "Rawa Barat",
+        "Senayan", "Pulo", "Petogogan", "Gandaria Utara", "Cipete Utara"
+      ],
+      "Pancoran": [
+        "Pancoran", "Kalibata", "Rawajati",
+        "Duren Tiga", "Pengadegan", "Cikoko"
+      ],
+      "Jagakarsa": [
+        "Jagakarsa", "Srengseng Sawah", "Ciganjur",
+        "Lenteng Agung", "Tanjung Barat", "Cipedak"
+      ],
+      "Pesanggrahan": [
+        "Petukangan Utara", "Petukangan Selatan", "Ulujami",
+        "Bintaro", "Pesanggrahan"
+      ]
+    },
+
+    "Jakarta Timur": {
+      "Matraman": [
+        "Pisangan Baru", "Utan Kayu Utara", "Kayu Manis", "Palmeriam",
+        "Kebon Manggis", "Utan Kayu Selatan"
+      ],
+      "Pulogadung": [
+        "Pulo Gadung", "Pisangan Timur", "Cipinang","Jatinegara Kaum",
+        "Rawamangun", "Kayu Putih", "Jati"
+      ],
+      "Jatinegara": [
+        "Kampung Melayu", "Bidara Cina", "Bali Mester","Rawa Bunga",
+        "Cipinang Cimpedak", "Cipinang Muara", "Cipinang Besar Selatan","Cipinang Besar Utara"
+      ],
+      "Kramatjati": [
+        "Kramatjati", "Tengah", "Dukuh","Batu Ampar",
+        "Balekambang", "Cililitan", "Cawang"
+      ],
+      "Pasar Rebo": [
+        "Gedong", "Baru", "Cijantung", "Kalisari", "Pekayon"
+      ],
+      "Cakung": [
+        "Jatinegara", "Rawa Terate", "Penggilingan", "Cakung Timur",
+        "Pulo Gebang", "Ujung Menteng", "Cakung Barat"
+      ],
+      "Duren Sawit": [
+        "Duren Sawit", "Pondok Bambu", "Klender", "Pondok Kelapa",
+        "Malaka Sari", "Malaka Jaya", "Pondok Kopi"
+      ],
+      "Makasar": [
+        "Makasar", "Pinang Ranti", "Kebon Pala","Halim Perdana kusuma", "Cipinang Melayu"
+      ],
+      "Ciracas": [
+        "Ciracas", "Cibubur", "Kelapa Dua Wetan", "Susukan", "Rambutan"
+      ],
+      "Cipayung": [
+        "Cipayung", "Cilangkap", "Pondok Ranggon", "Munjul", "Setu",
+        "Batu Ampar", "Lubang Buaya", "Ceger"
+      ]
+    }
+  },
+  "Banten": {
+    "Kabupaten Tangerang": {
+      "Balaraja": [
+        "Balaraja", "Cangkudu", "Talagasari", "Tobat",
+        "Sentul", "Gembong", "Sukamurni", "Saga", "Sentul Jaya"
+      ],
+      "Jayanti": [
+        "Pangkat", "Pabuaran", "Pasir Muncang", "Sumur Bandung",
+        "Jayanti", "Dangdeur", "Cikande", "Pasir Gintung"
+      ],
+      "Tigaraksa": [
+        "Tigaraksa", "Pasir Bolang", "Matagara", "Pasir Nangka",
+        "Pete", "Tegalsari", "Kadu Agung", "Pematang","Cisereh",
+        "Margasari", "Cileles", "Sodong", "Tapos", "Bantar Panjang"
+      ],
+      "Jambe": [
+        "Sukamanah", "Jambe", "Tipar Raya", "Taban","Daru",
+        "Kutruk", "Ranca Buaya", "Mekarsari", "Ancol Pasir", "Pasir Barat"
+      ],
+      "Cisoka": [
+        "Cisoka", "Caringin", "Selapajang", "Sukatani",
+        "Bojong Loa", "Cibugel", "Cempaka","Carenang",
+        "Karang Harja","Jeungjing"
+      ],
+      "Kresek": [
+        "Pasir Ampo", "Rancailat", "Kemuning", "Renged", "Talok",
+        "Koper", "Jengkol", "Patrasana", "Kresek"
+      ],
+      "Kronjo": [
+        "Kronjo", "Pagenjahan", "Pasir", "Muncung", "Pagedangan Ilir",
+        "Pagedangan Udik", "Pasilian", "Bakung", "Blukbuk", "Cirumpak"
+      ],
+      "Mauk": [
+        "Mauk Barat", "Mauk Timur", "Tegal Kunir Kidul", "Tegal Kunir Lor",
+        "Sasak", "Gunung Sari", "Kedung Dalem", "Marga Mulya", "Tanjung Anom",
+        "Jatiwaringin", "Banyu Asih", "Ketapang"
+      ],
+      "Kemiri": [
+        "Patramanggala", "Karang Anyar", "Lontar", "Kemiri",
+        "Ranca Labuh", "Klebet", "Legok Suka Maju"
+      ],
+      "Sukadiri": [
+        "Sukadiri", "Buaran Jati", "Rawa Kidang", "Pekayon",
+        "Karang Serang", "Kosambi", "Mekar Kondang", "Gintung"
+      ],
+      "Rajeg": [
+        "Rajeg", "Rajeg Mulya", "Pangarengan", "Jambu Karya",
+        "Lembangsari", "Sukamanah", "Tanjakan", "Tanjakan Mekar","Sukatani",
+        "Sukasari", "Ranca Bango", "Daon", "Mekarsari"
+      ],
+      "Pasar Kemis": [
+        "Pasar Kemis", "Sindangsari", "Sukamantri", "Kutabumi","Pangadegan",
+        "Kuta Jaya", "Gelam Jaya", "Kuta Baru", "Suka Asih"
+      ],
+      "Teluknaga": [
+        "Teluknaga", "Bojong Renged", "Babakan Asem", "Keboncau","Pangkalan",
+        "Kampung Melayu Timur", "Kampung Melayu Barat", "Muara", "Lemo",
+        "Tanjung Pasir", "Tegal Angus", "Tanjung Burung", "Kampung Besar"
+      ],
+      "Kosambi": [
+        "Kosambi Barat", "Kosambi Timur", "Salembaran Jaya", "Salembaran Jati",
+        "Ranga Rengas", "Rawa Burung", "Cengklong", "Belimbing","Jati Mulya","Dadap"
+      ],
+      "Pakuhaji": [
+        "Pakuhaji", "Paku Alam", "Bonasari", "Rawa Boni", "Buaran Mangga",
+        "Buaran Bambu", "Kalibaru", "Kohod", "Kramat", "Sukawali",
+        "Surya Bahari", "Kiara Payung", "Laksana", "Gaga"
+      ],
+      "Sepatan": [
+        "Sepatan", "Karet", "Kayu Agung", "Kayu Bongkok", "Pondok Jaya",
+        "Pisangan Jaya", "Mekar Jaya", "Sarakan"
+      ],
+      "Curug": [
+        "Curug Kulon", "Curug Wetan", "Kadu", "Kadu Jaya", "Sukabakti",
+        "Binong", "Cukanggalih"
+      ],
+      "Cikupa": [
+        "Sukamulya", "Cibadak", "Bunder","Talaga", "Talagasari",
+        "Dukuh", "Cikupa", "Sukanagara", "Bitung Jaya", "Pasir Gadung", "Sukadamai",
+        "Pasir Jaya", "Budi Mulya", "Bojong"
+      ],
+      "Panongan": [
+        "Ranca Iyuh", "Mekar Bakti", "Peusar", "Ranca Kalapa",
+        "Serdang Kulon", "Mekar Jaya", "Ciakar", "Panongan"
+      ],
+      "Legok": [
+        "Caringin", "Serdang Wetan", "Babat", "Ciangir", "Legok",
+        "Palasari", "Bojongkamal", "Rancagong", "Kemuning", "Babakan","Cirarab"
+      ],
+      "Pagedangan": [
+        "Cicalengka", "Pagedangan", "Medang", "Cijantra", "Lengkong Kulon",
+        "Situ Gadung", "Jatake", "Cihuni", "Kadu Sirung", "Malang Nengah", "Karang Tengah"
+      ],
+      "Cisauk": [
+        "Cisauk", "Mekar Wangi", "Suradita", "Sampora",
+        "Dangdang", "Cibogo"
+      ],
+      "Sukamulya": [
+        "Benda", "Sukamulya", "Kaliasin", "Buniayu",
+        "Parahu", "Merak", "Bunar", "Kubang"
+      ],
+      "Kelapa Dua": [
+        "Kelapa Dua", "Bencongan", "Bencongan Indah", "Pakulonan Barat",
+        "Bojong Nangka", "Curug Sangereng"
+      ],
+      "Sindang Jaya": [
+        "Sindang Jaya", "Wanakerta", "Sukaharja","Sindangasih",
+        "Sindangpanon", "Sindangsono", "Badak Anom"
+      ],
+      "Sepatan Timur": [
+        "Kedaung Barat", "Lebak Wangi", "Jati Mulya",
+        "Sangiang", "Gempol Sari", "Kampung Kelor", "Pondok Kelor", "Tanah Merah"
+      ],
+      "Solear": [
+        "Solear", "Cikuya", "Cikasungka", "Cireundeu",
+        "Cikareo", "Pasanggrahan", "Munjul"
+      ],
+      "Gunung Kaler": [
+        "Gunung Kaler", "Sidoko", "Rancagede", "Kedung",
+        "Cipaeh", "Onyam", "Tamiang", "Kandawati", "Cibetok"
+      ],
+      "Mekar Baru": [
+        "Mekar Baru", "Kedaung", "Cijeruk",
+        "Waliwis", "Klutuk", "Jenggot", "Kosambi Dalam", "Gandaria"
+      ]
+    },
+
+    "Kota Tangerang": {
+      "Tangerang": [
+        "Sukarasa", "Sukaasih", "Tanah Tinggi", "Buaran Indah",
+        "Cikokol", "Kelapa Indah", "Sukasari", "Babakan"
+      ],
+      "Jatiuwung": [
+        "Keroncong", "Jatake", "Pasir Jaya","Gandasari",
+        "Manis Jaya", "Alam Jaya"
+      ],
+      "Batuceper": [
+        "Batuceper", "Batujaya", "Poris Gaga", "Poris Gaga Baru","Kebon Besar",
+        "Batusari", "Poris Jaya"
+      ],
+      "Benda": [
+        "Belendung", "Jurumudi", "Benda", "Pajang", "Jurumudi Baru"
+      ],
+      "Cipondoh": [
+        "Cipondoh", "Cipondoh Makmur", "Cipondoh Indah",
+        "Gondrong", "Kenanga", "Petir", "Ketapang","Poris Plawad","Poris Plawad Utara", "Poris Plawad Indah"
+      ],
+      "Ciledug": [
+        "Paninggilan", "Sudimara Barat", "Sudimara Timur", "Tajur",
+        "Parung Serab", "Sudimara Jaya", "Sudimara Selatan", "Paninggilan Utara"
+      ],
+      "Karawaci": [
+        "Karawaci", "Bojong Jaya", "Karawaci Baru", "Nusa Jaya",
+        "Cimone", "Cimone Jaya", "Pabuaran", "Sumur Pacing",
+        "Bugel", "Margasari", "Pabuaran Tumpeng", "Nambo Jaya",
+        "Gerendeng","Sukajadi", "Pasar Baru", "Koang Jaya"
+      ],
+      "Periuk": [
+        "Periuk", "Gembor", "Gebang Raya", "Sangiang Jaya", "Periuk Jaya"
+      ],
+      "Cibodas": [
+        "Cibodas", "Cibodasari", "Cibodas Baru",
+        "Panunggangan Barat", "Uwung Jaya", "Jatiuwung"
+      ],
+      "Neglasari": [
+        "Neglasari", "Karang Sari", "Selapajang Jaya", "Kedaung Wetan",
+        "Mekarsari", "Karang Anyar", "Kedaung Baru"
+      ],
+      "Pinang": [
+        "Pinang", "Sudimara Pinang", "Nerogtog", "Kunciran",
+        "Kunciran Indah", "Kunciran Jaya", "Cipete", "Pakojan",
+        "Panunggangan", "Panunggangan Utara", "Panunggangan Timur"
+      ],
+      "Karang Tengah": [
+        "Karang Tengah", "Karang Mulya", "Pondok Bahar",
+        "Pondok Pucung", "Karang Timur", "Padurenan", "Parung Jaya"
+      ],
+      "Larangan": [
+        "Larangan Utara", "Larangan Selatan", "Cipadu",
+        "Kreo", "Larangan Indah", "Gaga", "Cipadu Jaya", "Kreo Selatan"
+      ]
+    },
+    "Tangerang Selatan": {
+      "Serpong": [
+        "Ciater", "Rawabuntu", "Rawa Mekarjaya", "Lengkong Gudang",
+        "Lengkong Wetan", "Buaran", "Lengkong Gudang Timur","Cilenggang", "Serpong"
+      ],
+      "Serpong Utara": [
+        "Pakulonan", "Pakualam", "Pakujaya", "Pondok Jagung", "Pondok Jagung Timur",
+        "Jelupang", "Lengkong Karya"
+      ],
+      "Pondok Aren": [
+        "Pondok Betung", "Pondok Pucung", "Pondok Karya", "Pondok Jaya",
+        "Pondok Aren", "Pondok Kacang Barat", "Pondok Kacang Timur", "Parigi",
+        "Parigi Baru", "Jurangmangu Barat", "Jurangmangu Timur"
+      ],
+      "Ciputat": [
+        "Sawah Baru", "Serua", "Ciputat", "Sawah Lama", "Serua Indah","Jombang",
+        "Cipayung"
+      ],
+      "Ciputat Timur": [
+        "Cempaka Putih", "Pondok Ranji", "Pisangan", "Cireundeu","Rempoa",
+        "Rengas"
+      ],
+      "Pamulang": [
+        "Pamulang Barat", "Benda Baru", "Pondok Benda", "Pondok Cabe Udik",
+        "Pondok Cabe Ilir", "Kedaung", "Bambuapus", "Pamulang Timur"
+      ],
+      "Setu": [
+        "Muncul","Setu","Keranggan","Kademangan","Babakan",
+        "Bakti Jaya"
+      ]
+    }
+  },
+  "Jawa Barat": {
+    "Kabupaten Bogor": {
+      "Cibinong": [
+        "Pondok Rajeg", "Karadenan", "Harapanjaya", "Nanggewer",
+        "Nanggewer Mekar", "Cibinong", "Pakansari", "Tengah",
+        "Sukahati", "Ciriung", "Cirimekar", "Pabuaran", "Pabuaran Mekar"
+      ],
+      "Gunung Putri": [
+        "Wahaherang", "Bojong Kulur", "Ciangsana", "Gunung Putri",
+        "Bojong Nangka", "Tlajung Udik", "Cicadas", "Cikeas Udik",
+        "Nagrak", "Karanggan"
+      ],
+      "Citeureup": [
+        "Puspasari", "Citeureup", "Leuwinutug", "Tajur", "Sanja",
+        "Puspanegara", "Karang Asem Barat", "Karang Asem Timur",
+        "Tarikolot", "Gunungsari", "Tangkil", "Sukahati", "Hambalang",
+        "Pasirmukti"
+      ],
+      "Sukaraja": [
+        "Gununggeulis", "Cilebut Timur", "Cilebut Barat", "Cibanon",
+        "Nagrak", "Sukatani", "Sukaraja", "Cikeas", "Pasir Jambu",
+        "Cimandala", "Cijujung", "Cadasngampar", "Pasirlaja"
+      ],
+      "Babakan Madang": [
+        "Cijayanti", "Sumurbatu", "Sentul", "Karangtengah",
+        "Cipambuan", "Kadumanggu", "Citaringgul", "Babakan Madang",
+        "Bojong Koneng"
+      ],
+      "Jonggol": [
+        "Sukamaju", "Sirnagalih", "Singajaya", "Sukasirna", "Sukanegara",
+        "Sukamanah", "Weninggalih", "Cibodas", "Jonggol", "Bendungan",
+        "Singasari", "Balekambang", "Sukajaya", "Sukagalih"
+      ],
+      "Cileungsi": [
+        "Pasirangin", "Mekarsari", "Mampir", "Dayeuh", "Gandoang",
+        "Jatisari", "Cileungsi Kidul", "Cipeucang", "Situsari", "Cipenjo",
+        "Limusnunggal", "Cileungsi"
+      ],
+      "Cariu": [
+        "Cariu", "Kutamekar", "Babakan Raden", "Tegal Panjang",
+        "Sukarasa", "Cikutamahi", "Karya Mekar", "Cibatutiga"
+      ],
+      "Sukamakmur": [
+        "Wargajaya", "Pabuaran", "Sukadamai", "Sukawangi", "Cibadak",
+        "Sukaresmi", "Sukamulya", "Sukaharja", "Sirnajaya",
+        "Sukamakmur"
+      ],
+      "Parung": [
+        "Parung", "Iwul", "Bojongsempu", "Waru", "Cogreg",
+        "Pamegarsari", "Warujaya", "Bojongindah", "Jabonmekar"
+      ],
+      "Gunung Sindur": [
+        "Cidokom", "Padurenan", "Pengasinan", "Curug", "Gunungsindur",
+        "Jampang", "Cibadung", "Cibinong", "Rawakalong", "Pabuaran"
+      ],
+      "Kemang": [
+        "Bojong", "Parakanjaya", "Kemang", "Pabuaran", "Semplak Barat",
+        "Atang Senjaya", "Jampang", "Pondok Udik", "Tegal"
+      ],
+      "Bojong Gede": [
+        "Bojongbaru", "Cimanggis", "Susukan", "Ragajaya",
+        "Kedungwaringin", "Waringinjaya", "Pabuaran", "Rawapanjang",
+        "Bojonggede"
+      ],
+      "Leuwiliang": [
+        "Leuwiliang", "Purasari", "Karyasari", "Pabangbon", "Karacak",
+        "Barengkok", "Leuwimekar", "Puraseda", "Cibeber I",
+        "Cibeber II", "Karehkel"
+      ],
+      "Ciampea": [
+        "Ciampea", "Cinangka", "Cihideungudik", "Bojongjengkol",
+        "Tegalwaru", "Cibuntu", "Cicadas", "Cibadak", "Bojongrangkas",
+        "Cihideunghilir", "Cibanteng", "Benteng", "Ciampea Udik"
+      ],
+      "Cibungbulang": [
+        "Situ Udik", "Situ Ilir", "Cemplang", "Cibatok I",
+        "Ciaruteun Udik", "Leuweungkolot", "Cimanggu I", "Cimanggu II",
+        "Dukuh", "Cijujung", "Ciaruteun Ilir", "Cibatok II",
+        "Sukamaju", "Galuga", "Girimulya"
+      ],
+      "Pamijahan": [
+        "Purwabakti", "Cibunian", "Cibitungwetan", "Gunungmenyan",
+        "Gunungbunder II", "Pasarean", "Cimayang", "Pamijahan",
+        "Cibening", "Gunungbunder I", "Cibitung Kulon", "Gunung Picung",
+        "Ciasihan", "Gunungsari", "Ciasmara"
+      ],
+      "Rumpin": [
+        "Rumpin", "Leuwibatu", "Cidokom", "Gobang", "Cibodas", "Rabak",
+        "Kampungsawah", "Cipinang", "Sukasari", "Tamansari",
+        "Kertajaya", "Sukamulya", "Mekarsari", "Mekarjaya"
+      ],
+      "Jasinga": [
+        "Curug", "Pangradin", "Kalongsawah", "Sipak", "Jasinga",
+        "Koleang", "Cikopomayak", "Setu", "Barengkok", "Bagoang",
+        "Pangaur", "Pamagersari", "Jugala Jaya", "Tegalwangi",
+        "Neglasari", "Wirajaya"
+      ],
+      "Parung Panjang": [
+        "Parung Panjang", "Jagabaya", "Cibunar", "Gintung Cilejet",
+        "Cilejet", "Pingku"
+      ],
+      "Nanggung": [
+        "Malasari", "Curugbitung", "Cisarua", "Bantarkaret", "Hambaro",
+        "Kalongliud", "Nanggung", "Parakanmuncang", "Pangkaljaya",
+        "Sukaluyu", "Batu Tulis"
+      ],
+      "Cigudeg": [
+        "Sukamaju", "Cigudeg", "Bunar", "Banyuresmi", "Cintamanik",
+        "Argapura", "Bangunjaya", "Rengasjajar", "Batujajar",
+        "Wargajaya", "Sukaraksa", "Banyuwangi", "Banyuasih",
+        "Mekarjaya", "Tegallega"
+      ],
+      "Tenjo": [
+        "Tapos", "Ciomas", "Batok", "Babakan", "Tenjo", "Cilaku",
+        "Singabraja", "Singabangsa", "Bojong"
+      ],
+      "Ciawi": [
+        "Cileungsi", "Citapen", "Cibedug", "Jambuluwuk", "Banjarsari",
+        "Teluk Pinang", "Banjar Waru", "Bendungan", "Pandan Sari",
+        "Bojong Murni", "Banjar Wangi", "Ciawi", "Bitungsari"
+      ],
+      "Cisarua": [
+        "Batulayang", "Jogjogan", "Cibeureum", "Cilember", "Citeko",
+        "Tugu Selatan", "Leuwimalang", "Kopo", "Tugu Utara", "Cisarua"
+      ],
+      "Megamendung": [
+        "Sukamaju", "Kuta", "Gadog", "Sukakarya", "Megamendung",
+        "Cipayung Datar", "Sukamanah", "Sukagalih", "Cipayung Girang",
+        "Sukamahi", "Sukaresmi", "Pasir Angin"
+      ],
+      "Caringin": [
+        "Pasir Muncang", "Cimande Hilir", "Ciderum", "Caringin",
+        "Ciherang Pondok", "Cinagara", "Cimande", "Pancawati",
+        "Muara Jaya", "Basir Buncir", "Lemah Duhur", "Tangkil"
+      ],
+      "Cijeruk": [
+        "Cijeruk", "Cipelang", "Warung Menteng", "Tajur Halang",
+        "Cipicung", "Cibalung", "Sukaharja", "Palasari", "Tanjungsari"
+      ],
+      "Ciomas": [
+        "Mekarjaya", "Sukaharja", "Padasuka", "Parakan", "Ciomas",
+        "Pagelaran", "Sukamakmur", "Ciapus", "Kota Batu",
+        "Laladon", "Ciomas Rahayu"
+      ],
+      "Dramaga": [
+        "Sukadamai", "Ciherang", "Sinarsari", "Sukawening", "Petir",
+        "Purwasari", "Cikarawang", "Babakan", "Dramaga", "Neglasari"
+      ],
+      "Tamansari": [
+        "Sukamantri", "Sirnagalih", "Pasireurih", "Tamansari",
+        "Sukaluyu", "Sukaresmi", "Sukajaya", "Sukajadi"
+      ],
+      "Klapanunggal": [
+        "Klapanunggal", "Bojong", "Nambo", "Lulut", "Cikahuripan",
+        "Kembang Kuning", "Bantar Jati", "Leuwikaret", "Ligarmukti"
+      ],
+      "Ciseeng": [
+        "Putat Nutug", "Ciseeng", "Parigi Mekar", "Cibentang",
+        "Cibeuteung Udik", "Karihkil", "Babakan", "Cihoe",
+        "Cibeuteung Muara", "Kuripan"
+      ],
+      "Ranca Bungur": [
+        "Bantarjaya", "Bantarsari", "Pasirgaok", "Rancabungur",
+        "Mekarsari", "Candali", "Cimulang"
+      ],
+      "Sukajaya": [
+        "Cisarua", "Kiarasari", "Sukajaya", "Sipayung", "Cileuksa",
+        "Kiarapandak", "Harkatjaya", "Sukamulih", "Pasir Madang",
+        "Urug", "Jayaraharja"
+      ],
+      "Tanjungsari": [
+        "Tanjungsari", "Selawangi", "Tanjungrasa", "Antajaya",
+        "Pasir Tanjung", "Cibadak", "Sukarasa", "Sirnasari",
+        "Buanajaya", "Sirnarasa"
+      ],
+      "Tajurhalang": [
+        "Tajurhalang", "Citayam", "Sasak Panjang", "Nanggerang",
+        "Sukmajaya", "Tonjong", "Kalisuren"
+      ],
+      "Cigombong": [
+        "Cigombong", "Watesjaya", "Ciburuy", "Srogol", "Cisalada",
+        "Tugujaya", "Pasirjaya", "Ciburayut", "Ciadeg"
+      ],
+      "Leuwisadeng": [
+        "Leuwisadeng", "Babakan Sadeng", "Sadeng Kolot", "Wangunjaya",
+        "Kalong I", "Kalong II", "Sadeng", "Sibanteng"
+      ],
+      "Tenjolaya": [
+        "Tapos I", "Tapos II", "Cibitung Tengah", "Situdaun",
+        "Cinangneng", "Gunung Malang", "Gunung Mulya"
+      ]
+    },
+  "Kota Depok": {
+      "Pancoran Mas": [
+        "Depok", "Depok Jaya","Pancoran Mas",
+        "Mampang", "Rangkapan Jaya Baru", "Rangkapan Jaya"
+      ],
+      "Cimanggis": [
+        "Harjamukti", "Curug","Tugu","Mekarsari",
+        "Pasir Gunung Selatan","Cisalak Pasar"
+      ],
+      "Sawangan": [
+        "Pasir Putih", "Bedahan","Pengasinan","Cinangka",
+        "Sawangan","Sawangan Baru","Kedaung"
+      ],
+      "Limo": [
+        "Maruyung","Grogol","Krukut","Limo"
+      ],
+      "Sukmajaya": [
+        "Sukmajaya","Abadi Jaya","Mekar Jaya",
+        "Baktijaya", "Cisalak","Tirtajaya"
+      ],
+      "Beji": [
+        "Beji","Kukusan","Tanah Baru",
+        "Kemiri Muka","Pondok Cina", "Beji Timur"
+      ],
+      "Cipayung": [
+        "Cipayung","Cipayung Jaya","Ratu Jaya",
+        "Bojong Pondok Terong","Pondok Jaya"
+      ],
+      "Cilodong": [
+        "Sukamaju", "Cilodong","Kalibaru",
+        "Kalimulya","Jatimulya"
+      ],
+      "Cinere": [
+        "Cinere","Gandul","Pangkalan Jati","Pangkalan Jati Baru"
+      ],
+      "Tapos": [
+        "Tapos","Leuwinanggung","Sukatani","Sukamaju Baru",
+        "Jatijajar","Cilangkap","Cimpaeun"
+      ],
+      "Bojongsari": [
+        "Bojongsari","Bojongsari Baru","Serua","Pondok Petir","Curug","Duren Mekar","Duren Seribu"
+      ]
+    },
+
+    "Kabupaten Bekasi": {
+      "Tarumajaya": [
+        "Sagara Makmur",
+        "Segarajaya",
+        "Pusaka Rakyat",
+        "Pahlawan Setia",
+        "Setia Mulya",
+        "Samudra Jaya",
+        "Setia Asih",
+        "Pantai Makmur"
+      ],
+      "Babelan": [
+        "Bunibakti",
+        "Muarabakti",
+        "Kedung Pengawas",
+        "Hurip Jaya",
+        "Pantaihurip",
+        "Bahagia",
+        "Kebalen",
+        "Babelankota",
+        "Kedungjaya"
+      ],
+      "Sukawangi": [
+        "Sukaringin",
+        "Sukabudi",
+        "Sukadaya",
+        "Sukawangi",
+        "Sukakerta",
+        "Sukatenang",
+        "Sukamekar"
+      ],
+      "Tambelang": [
+        "Sukawijaya",
+        "Sukamaju",
+        "Sukaraja",
+        "Sukarapih",
+        "Sukarahayu",
+        "Sukamantri",
+        "Sukabakti"
+      ],
+      "Tambun Utara": [
+        "Satriajaya",
+        "Jejalenjaya",
+        "Satriamekar",
+        "Sriamur",
+        "Srimukti",
+        "Srijaya",
+        "Srimahi",
+        "Karangsatria"
+      ],
+      "Tambun Selatan": [
+        "Jatimulya",
+        "Lambangsari",
+        "Lambangjaya",
+        "Tambun",
+        "Setiadarma",
+        "Setiamekar",
+        "Mekarsari",
+        "Tridaya Sakti",
+        "Mangunjaya",
+        "Sumberjaya"
+      ],
+      "Cibitung": [
+        "Wanasari",
+        "Wanajaya",
+        "Kertamukti",
+        "Muktiwari",
+        "Sarimukti",
+        "Sukajaya",
+        "Cibuntu"
+      ],
+      "Cikarang Barat": [
+        "Telagamurni",
+        "Mekarwangi",
+        "Jatiwangi",
+        "Danau Indah",
+        "Gandamekar",
+        "Gandasari",
+        "Sukadanau",
+        "Telaga Asih",
+        "Kalijaya",
+        "Telajung",
+        "Cikedokan"
+      ],
+      "Cikarang Utara": [
+        "Cikarangkota",
+        "Karangbaru",
+        "Karangasih",
+        "Waluya",
+        "Karangraharja",
+        "Pasirgombong",
+        "Simpangan",
+        "Tanjungsari",
+        "Hajarmekar",
+        "Mekarmukti",
+        "Wangunharja"
+      ],
+      "Karang Bahagia": [
+        "Sukaraya",
+        "Karangrahayu",
+        "Karangsetia",
+        "Karanganyar",
+        "Karangbahagia",
+        "Karangsentosa",
+        "Karangsatu",
+        "Karangmukti"
+      ],
+      "Cikarang Timur": [
+        "Tanjungbaru",
+        "Cipayung",
+        "Hegarmanah",
+        "Jatireja",
+        "Jatibaru",
+        "Labansari",
+        "Sertajaya",
+        "Karangsari"
+      ],
+      "Kedung Waringin": [
+        "Karangsambung",
+        "Waringinjaya",
+        "Karangmekar",
+        "Mekarjaya",
+        "Karangharum",
+        "Bojongsari",
+        "Kedungwaringin"
+      ],
+      "Pebayuran": [
+        "Karangharja",
+        "Karangsegar",
+        "Sumberurip",
+        "Sumbereja",
+        "Karangreja",
+        "Karangjaya",
+        "Sumbersari",
+        "Karangpatri",
+        "Karanghaur",
+        "Kertajaya",
+        "Kertasari",
+        "Bantarsari",
+        "Bantarjaya"
+      ],
+      "Sukakarya": [
+        "Sukamurni",
+        "Sukaindah",
+        "Sukakarya",
+        "Sukalaksana",
+        "Sukajadi",
+        "Sukakarsa",
+        "Sukamakmur"
+      ],
+      "Sukatani": [
+        "Sukamulya",
+        "Sukamanah",
+        "Sukahurip",
+        "Sukaasih",
+        "Sukarukun",
+        "Banjarsari",
+        "Sukadarma"
+      ],
+      "Cabangbungin": [
+        "Jayabakti",
+        "Jayalaksana",
+        "Sindangsari",
+        "Sindangjaya",
+        "Setialaksana",
+        "Setiajaya",
+        "Lenggahjaya",
+        "Lenggahsari"
+      ],
+      "Muaragembong": [
+        "Pantai Mekar",
+        "Pantai Bahagia",
+        "Pantai Bakti",
+        "Pantai Harapanjaya",
+        "Pantai Sederhana",
+        "Jayasakti"
+      ],
+      "Setu": [
+        "Cijengkol",
+        "Lubangbuaya",
+        "Burangkeng",
+        "Ciledug",
+        "Cibening",
+        "Taman Sari",
+        "Taman Rahayu",
+        "Cikarageman",
+        "Ragamanunggal",
+        "Muktijaya",
+        "Kertarahayu"
+      ],
+      "Cikarang Selatan": [
+        "Cibatu",
+        "Sukasejati",
+        "Ciantra",
+        "Sukadami",
+        "Sukaresmi",
+        "Serang",
+        "Pasirsari"
+      ],
+      "Cikarang Pusat": [
+        "Cicau",
+        "Sukamahi",
+        "Pasiranji",
+        "Hegarmukti",
+        "Jayamukti",
+        "Pasirtanjung"
+      ],
+      "Serang Baru": [
+        "Sukaragam",
+        "Sirnajaya",
+        "Sukasari",
+        "Jayamulya",
+        "Nagacipta",
+        "Nagasari",
+        "Cilangkara",
+        "Jayasampurna"
+      ],
+      "Cibarusah": [
+        "Sirnajati",
+        "Ridogalih",
+        "Ridomanah",
+        "Wibawamulya",
+        "Cibarusah Kota",
+        "Cibarusah Jaya",
+        "Sindangmulya"
+      ],
+      "Bojongmangu": [
+        "Karangmulya",
+        "Karangindah",
+        "Bojongmangu",
+        "Sukabungah",
+        "Sukamukti",
+        "Medalkrisna"
+      ]
+    },
+
+    "Kota Bogor": {
+      "Bogor Selatan": [
+        "Batu Tulis",
+        "Bondongan",
+        "Empang",
+        "Lawanggintung",
+        "Pamoyanan",
+        "Ranggamekar",
+        "Mulyaharja",
+        "Cikaret",
+        "Bojongkerta",
+        "Rancamaya",
+        "Kertamaya",
+        "Harjasari",
+        "Muarasari",
+        "Genteng",
+        "Pakuan",
+        "Cipaku"
+      ],
+      "Bogor Timur": [
+        "Sukasari",
+        "Baranangsiang",
+        "Katulampa",
+        "Sindangsari",
+        "Sindangrasa",
+        "Tajur"
+      ],
+      "Bogor Tengah": [
+        "Gudang",
+        "Paledang",
+        "Pabaton",
+        "Cibogor",
+        "Babakan",
+        "Sempur",
+        "Tegallega",
+        "Babakan Pasar",
+        "Panaragan",
+        "Ciwaringin",
+        "Kebon Kalapa"
+      ],
+      "Bogor Barat": [
+        "Menteng",
+        "Sindang Barang",
+        "Bubulak",
+        "Margajaya",
+        "Balumbang Jaya",
+        "Situ Gede",
+        "Semplak",
+        "Cilendek Barat",
+        "Cilendek Timur",
+        "Curug Mekar",
+        "Curug",
+        "Pasir Jaya",
+        "Pasir Kuda",
+        "Pasir Mulya",
+        "Gunung Batu",
+        "Loji"
+      ],
+      "Bogor Utara": [
+        "Bantarjati",
+        "Tegal Gundil",
+        "Kedung Halang",
+        "Ciparigi",
+        "Cibuluh",
+        "Ciluar",
+        "Tanah Baru",
+        "Cimahpar"
+      ],
+      "Tanah Sareal": [
+        "Tanah Sareal",
+        "Kebon Pedes",
+        "Kedung Badak",
+        "Sukaresmi",
+        "Kedung Waringin",
+        "Kedung Jaya",
+        "Sukadamai",
+        "Mekar Wangi",
+        "Kencana",
+        "Kayu Manis",
+        "Cibadak"
+      ]
+    },
+
+    "Kota Bekasi": {
+      "Bekasi Timur": [
+        "Bekasijaya",
+        "Margahayu",
+        "Durenjaya",
+        "Arenjaya"
+      ],
+      "Bekasi Barat": [
+        "Bintara",
+        "Kranji",
+        "Kotabaru",
+        "Bintarajaya",
+        "Jakasampurna"
+      ],
+      "Bekasi Utara": [
+        "Kaliabang Tengah",
+        "Perwira",
+        "Harapanbaru",
+        "Teluk Pucung",
+        "Margamulya",
+        "Harapanjaya"
+      ],
+      "Bekasi Selatan": [
+        "Pekayonjaya",
+        "Margajaya",
+        "Jakamulya",
+        "Jakasetia",
+        "Kayuringinjaya"
+      ],
+      "Rawalumbu": [
+        "Bojong Rawalumbu",
+        "Pengasinan",
+        "Sepanjangjaya",
+        "Bojongmenteng"
+      ],
+      "Medansatria": [
+        "Medansatria",
+        "Harapanmulya",
+        "Pejuang",
+        "Kalibaru"
+      ],
+      "Bantargebang": [
+        "Bantargebang",
+        "Cikiwul",
+        "Ciketingudik",
+        "Sumurbatu"
+      ],
+      "Pondokgede": [
+        "Jatiwaringin",
+        "Jatibening",
+        "Jatimakmur",
+        "Jatibening Baru",
+        "Jaticempaka"
+      ],
+      "Jatiasih": [
+        "Jatimekar",
+        "Jatiasih",
+        "Jatikramat",
+        "Jatirasa",
+        "Jatiluhur",
+        "Jatisari"
+      ],
+      "Jatisampurna": [
+        "Jatimekar",
+        "Jatiasih",
+        "Jatikramat",
+        "Jatirasa",
+        "Jatiluhur",
+        "Jatisari"
+      ],
+      "Mustikajaya": [
+        "Padurenan",
+        "Cimuning",
+        "Mustikajaya",
+        "Mustikasari"
+      ],
+      "Pondokmelati": [
+        "Jatirahayu",
+        "Jatiwarna",
+        "Jatimelati",
+        "Jatimurni"
+      ]
+    }
+  }
+}
