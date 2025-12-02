@@ -102,7 +102,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 child: CircleAvatar(
                   radius: 40,
                   backgroundColor: Colors.grey.shade300,
-                  child: Icon(icon, color: Colors.red, size: 50),
+                  child: Icon(icon, color: color, size: 50),
                 ),
               ),
             ],
@@ -127,7 +127,6 @@ class _LoginScreenState extends State<LoginScreen> {
   Future<void> signIn() async {
     setState(() => _isLoading = true);
 
-    // ⬅ biar UI sempat rebuild & overlay muncul
     await Future.delayed(const Duration(milliseconds: 150));
 
     try {
@@ -139,33 +138,50 @@ class _LoginScreenState extends State<LoginScreen> {
       final user = userCredential.user;
 
       if (user != null) {
-        final docRef = FirebaseFirestore.instance
-            .collection('pelanggan')
-            .doc(user.uid);
+        final docRef = FirebaseFirestore.instance.collection('pelanggan').doc(user.uid);
         final docSnap = await docRef.get();
-        final data = docSnap.data() as Map<String, dynamic>;
-        final alamat = data['alamat'] ?? {};
 
-        if (alamat is Map &&
-            (alamat['nama_jalan'] == null || alamat['nama_jalan'] == "")) {
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(builder: (_) => IsiAlamat(uid: user.uid)),
+        if (!docSnap.exists) {
+          // Akun belum terdaftar di Firestore
+          showAwesomePopup(
+            title: "Akun Tidak Terdaftar",
+            message: "Email belum pernah digunakan. Silakan Sign Up dulu.",
+            color: Colors.red,
+            icon: Icons.warning_amber_rounded,
           );
         } else {
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(builder: (_) => HomePage(uid: user.uid)),
-          );
+          final data = docSnap.data() as Map<String, dynamic>;
+          final alamat = data['alamat'] ?? {};
+
+          if ((alamat['nama_jalan'] ?? "").isEmpty) {
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(builder: (_) => IsiAlamatWithMap(uid: user.uid)),
+            );
+          } else {
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(builder: (_) => HomePage(uid: user.uid)),
+            );
+          }
         }
       }
     } on FirebaseAuthException catch (e) {
-      showAwesomePopup(
-        title: "Login Gagal",
-        message: e.message ?? "Terjadi kesalahan.",
-        color: Colors.red,
-        icon: Icons.error,
-      );
+      if (e.code == 'user-not-found') {
+        showAwesomePopup(
+          title: "Akun Tidak Terdaftar",
+          message: "Email belum pernah digunakan. Silakan Sign Up dulu.",
+          color: Colors.red,
+          icon: Icons.warning_amber_rounded,
+        );
+      } else {
+        showAwesomePopup(
+          title: "Login Gagal",
+          message: e.message ?? "Terjadi kesalahan.",
+          color: Colors.red,
+          icon: Icons.error,
+        );
+      }
     } finally {
       setState(() => _isLoading = false);
     }
@@ -173,9 +189,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
   Future<void> _signInWithGoogle() async {
     setState(() => _isLoading = true);
-    await Future.delayed(
-      const Duration(milliseconds: 150),
-    ); // biar overlay tampil
+    await Future.delayed(const Duration(milliseconds: 150));
 
     try {
       final googleSignIn = GoogleSignIn();
@@ -191,28 +205,25 @@ class _LoginScreenState extends State<LoginScreen> {
         idToken: googleAuth.idToken,
       );
 
-      UserCredential userCredential = await FirebaseAuth.instance
-          .signInWithCredential(credential);
+      UserCredential userCredential = await FirebaseAuth.instance.signInWithCredential(credential);
       final user = userCredential.user;
       if (user == null) throw Exception("Gagal login Google");
 
-      final docRef = FirebaseFirestore.instance
-          .collection('pelanggan')
-          .doc(user.uid);
+      final docRef = FirebaseFirestore.instance.collection('pelanggan').doc(user.uid);
       final docSnap = await docRef.get();
 
       if (!docSnap.exists) {
+        // Buat akun baru jika belum ada
         await docRef.set({
           'id_pelanggan': user.uid,
           'nama_pelanggan': user.displayName ?? '',
-          'email': user.email,
+          'email': user.email ?? '',
           'password': '',
           'alamat': {
             'detail_jalan': "",
             'gmaps': {'latitude': "", 'longitude': "", 'link': ""},
             'kecamatan': "",
             'kelurahan': "",
-            'kode_pos': "",
             'kota': "",
             'nama_jalan': "",
             'provinsi': "",
@@ -220,37 +231,24 @@ class _LoginScreenState extends State<LoginScreen> {
           'no_telp': '',
           'created_at': FieldValue.serverTimestamp(),
         });
+      }
 
-        final newSnap = await docRef.get();
-        final data = newSnap.data() as Map<String, dynamic>;
-        final alamat = data['alamat'] ?? {};
+      final finalSnap = await docRef.get();
+      final data = finalSnap.data() != null 
+          ? finalSnap.data() as Map<String, dynamic> 
+          : <String, dynamic>{};
+      final alamat = data['alamat'] as Map<String, dynamic>? ?? {};
 
-        if (alamat['nama_jalan'] == null || alamat['nama_jalan'] == "") {
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(builder: (_) => IsiAlamat(uid: user.uid)),
-          );
-        } else {
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(builder: (_) => HomePage(uid: user.uid)),
-          );
-        }
+      if ((alamat['nama_jalan'] ?? "").isEmpty) {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (_) => IsiAlamatWithMap(uid: user.uid)),
+        );
       } else {
-        final data = docSnap.data() as Map<String, dynamic>;
-        final alamat = data['alamat'] ?? {};
-
-        if (alamat['nama_jalan'] == null || alamat['nama_jalan'] == "") {
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(builder: (_) => IsiAlamat(uid: user.uid)),
-          );
-        } else {
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(builder: (_) => HomePage(uid: user.uid)),
-          );
-        }
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (_) => HomePage(uid: user.uid)),
+        );
       }
     } catch (error) {
       showAwesomePopup(
@@ -263,6 +261,8 @@ class _LoginScreenState extends State<LoginScreen> {
       setState(() => _isLoading = false);
     }
   }
+
+
 
   @override
   Widget build(BuildContext context) {

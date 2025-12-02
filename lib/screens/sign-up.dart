@@ -130,6 +130,98 @@ class _SignInFormState extends State<SignInForm> {
   bool _isLoading = false;
   bool _obscurePassword = true;
 
+  void showPasswordInfo() {
+    showDialog(
+      context: context,
+      barrierDismissible: true, // bisa tap di luar untuk close
+      builder: (_) {
+        return Dialog(
+          backgroundColor: Colors.transparent,
+          child: Stack(
+            alignment: Alignment.center,
+            children: [
+              // Card utama
+              Container(
+                margin: const EdgeInsets.only(top: 40),
+                padding: const EdgeInsets.symmetric(horizontal: 22, vertical: 26),
+                decoration: BoxDecoration(
+                  color: Colors.white.withOpacity(0.95),
+                  borderRadius: BorderRadius.circular(22),
+                  boxShadow: [
+                    BoxShadow(
+                      blurRadius: 20,
+                      color: Colors.black.withOpacity(0.15),
+                      offset: const Offset(0, 10),
+                    ),
+                  ],
+                ),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const SizedBox(height: 40),
+                    const Text(
+                      "Syarat Password",
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontFamily: 'Poppins',
+                        fontWeight: FontWeight.w700,
+                        fontSize: 18,
+                        color: Color(0xFF0C3345),
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                    const Align(
+                      alignment: Alignment.centerLeft,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text("• Minimal 8 karakter", style: TextStyle(fontFamily: 'Poppins')),
+                          Text("• Ada huruf kecil (a-z)", style: TextStyle(fontFamily: 'Poppins')),
+                          Text("• Ada huruf besar (A-Z)", style: TextStyle(fontFamily: 'Poppins')),
+                          Text("• Ada angka (0-9)", style: TextStyle(fontFamily: 'Poppins')),
+                          Text("• Ada simbol (!@#\$%^&*)", style: TextStyle(fontFamily: 'Poppins')),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 20),
+                    ElevatedButton(
+                      onPressed: () => Navigator.pop(context),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color(0xFF0C3345),
+                        foregroundColor: Colors.white,
+                        minimumSize: const Size(120, 45),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                      ),
+                      child: const Text(
+                        "Mengerti",
+                        style: TextStyle(
+                          fontFamily: 'Poppins',
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+
+              // Icon di atas card
+              Positioned(
+                top: 0,
+                child: CircleAvatar(
+                  radius: 40,
+                  backgroundColor: Colors.grey.shade300,
+                  child: const Icon(Icons.info_outline, color: Color(0xFF0C3345), size: 50),
+                ),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
   String passwordStrength = ""; // weak, medium, strong
   Color strengthColor = Colors.red;
   double strengthValue = 0.0; // 0.33 / 0.66 / 1.0
@@ -224,7 +316,7 @@ class _SignInFormState extends State<SignInForm> {
                     padding: const EdgeInsets.only(
                       top: 2,
                     ), // kecil aja biar visual center
-                    child: Icon(icon, color: Colors.red, size: 50),
+                    child: Icon(icon, color: color, size: 50),
                   ),
                 ),
               ),
@@ -284,7 +376,7 @@ class _SignInFormState extends State<SignInForm> {
       showAwesomePopup(
         title: "Data Belum Lengkap",
         message: "Harap isi semua field sebelum melanjutkan.",
-        color: Color(0xFF0C3345),
+        color: Colors.red,
         icon: Icons.warning_amber_rounded,
       );
       return;
@@ -307,7 +399,7 @@ class _SignInFormState extends State<SignInForm> {
         title: "Nomor Telepon Tidak Valid",
         message:
             "Nomor telepon harus diawali 08 dan terdiri dari 10-15 digit angka.",
-        color: Color(0xFF0C3345),
+        color: Colors.red,
         icon: Icons.warning_amber_rounded,
       );
       return;
@@ -328,7 +420,7 @@ class _SignInFormState extends State<SignInForm> {
         title: "Password Tidak Valid",
         message:
             "Password harus huruf kecil, huruf besar, angka dan simbol dengan minimal 8 karakter.",
-        color: Color(0xFF0C3345),
+        color: Colors.red,
         icon: Icons.warning_amber_rounded,
       );
       return;
@@ -357,7 +449,7 @@ class _SignInFormState extends State<SignInForm> {
           title: "Password Tidak Valid",
           message:
               "Password harus huruf kecil, huruf besar, angka dan simbol dengan minimal 8 karakter.",
-          color: Color(0xFF0C3345),
+          color: Colors.red,
           icon: Icons.warning_amber_rounded,
         );
         return; // STOP SIGN UP
@@ -384,7 +476,6 @@ class _SignInFormState extends State<SignInForm> {
               'gmaps': {'latitude': "", 'longitude': "", 'link': ""},
               'kecamatan': "",
               'kelurahan': "",
-              'kode_pos': "",
               'kota': "",
               'nama_jalan': "",
               'provinsi': "",
@@ -405,13 +496,13 @@ class _SignInFormState extends State<SignInForm> {
       // lanjut ke isi alamat
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(builder: (_) => IsiAlamat(uid: user.uid)),
+        MaterialPageRoute(builder: (_) => IsiAlamatWithMap(uid: user.uid)),
       );
     } on FirebaseAuthException catch (e) {
       showAwesomePopup(
         title: "Terjadi Kesalahan",
         message: e.message ?? "Terjadi kesalahan.",
-        color: const Color(0xFF0C3345),
+        color: Colors.red,
         icon: Icons.warning_amber_rounded,
       );
     } finally {
@@ -426,7 +517,7 @@ class _SignInFormState extends State<SignInForm> {
       final GoogleSignInAccount? googleUser = await googleSignIn.signIn();
       if (googleUser == null) {
         widget.onLoadingChanged?.call(false);
-        return;
+        return; // user batal login
       }
 
       final GoogleSignInAuthentication googleAuth =
@@ -436,22 +527,22 @@ class _SignInFormState extends State<SignInForm> {
         idToken: googleAuth.idToken,
       );
 
-      UserCredential userCredential = await FirebaseAuth.instance
-          .signInWithCredential(credential);
+      // login atau register dengan credential Google
+      UserCredential userCredential =
+          await FirebaseAuth.instance.signInWithCredential(credential);
       final user = userCredential.user;
       if (user == null) throw Exception("Gagal login Google");
 
-      final docRef = FirebaseFirestore.instance
-          .collection('pelanggan')
-          .doc(user.uid);
+      final docRef = FirebaseFirestore.instance.collection('pelanggan').doc(user.uid);
       final docSnap = await docRef.get();
 
       if (!docSnap.exists) {
+        // User belum ada → buat akun baru
         await docRef.set({
           'id_pelanggan': user.uid,
           'nama_pelanggan': user.displayName ?? '',
-          'email': user.email,
-          'password': '',
+          'email': user.email ?? '',
+          'password': '', // kosong karena login Google
           'alamat': {
             'detail_jalan': "",
             'gmaps': {'latitude': "", 'longitude': "", 'link': ""},
@@ -465,21 +556,27 @@ class _SignInFormState extends State<SignInForm> {
           'no_telp': '',
           'created_at': FieldValue.serverTimestamp(),
         });
-      }
 
-      final data = docSnap.data();
-      final alamat =
-          (data is Map<String, dynamic> &&
-              data['alamat'] is Map<String, dynamic>)
-          ? data['alamat'] as Map<String, dynamic>
-          : <String, dynamic>{};
-
-      if (alamat['nama_jalan'] == null || alamat['nama_jalan'] == "") {
+        // langsung lanjut ke isi alamat
         Navigator.pushReplacement(
           context,
-          MaterialPageRoute(builder: (_) => IsiAlamat(uid: user.uid)),
+          MaterialPageRoute(builder: (_) => IsiAlamatWithMap(uid: user.uid)),
+        );
+        return;
+      }
+
+      // User sudah ada → ambil data alamat
+      final data = docSnap.data() != null ? Map<String, dynamic>.from(docSnap.data()!) : {};
+      final alamat = data['alamat'] as Map<String, dynamic>? ?? {};
+
+      if ((alamat['nama_jalan'] ?? "").isEmpty) {
+        // belum isi alamat → ke halaman isi alamat
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (_) => IsiAlamatWithMap(uid: user.uid)),
         );
       } else {
+        // sudah isi alamat → langsung HomePage
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(builder: (_) => HomePage(uid: user.uid)),
@@ -488,14 +585,15 @@ class _SignInFormState extends State<SignInForm> {
     } on FirebaseAuthException catch (e) {
       showAwesomePopup(
         title: "Gagal Membuat Akun",
-        message: e.message ?? "Terjadi kesalahan saat membuat akun.",
-        color: Color(0xFF0C3345),
+        message: e.message ?? "Terjadi kesalahan saat login Google.",
+        color: Colors.red,
         icon: Icons.warning_amber_rounded,
       );
     } finally {
       widget.onLoadingChanged?.call(false); // stop loading
     }
   }
+
 
   @override
   Widget build(BuildContext context) {
@@ -596,7 +694,7 @@ class _SignInFormState extends State<SignInForm> {
           ),
 
           const SizedBox(height: 24),
-          TextField(
+          TextFormField(
             controller: _passwordController,
             obscureText: _obscurePassword,
             onChanged: (value) {
@@ -604,7 +702,7 @@ class _SignInFormState extends State<SignInForm> {
             },
             decoration: InputDecoration(
               labelText: "Password",
-              hintText: "Masukkan kata sandi anda",
+              hintText: "Masukan Password anda",
               hintStyle: const TextStyle(
                 fontSize: 12,
                 fontFamily: 'Poppins',
@@ -625,20 +723,34 @@ class _SignInFormState extends State<SignInForm> {
               enabledBorder: authOutlineInputBorder,
               focusedBorder: authOutlineInputBorder,
 
-              // 🔥 ICON SHOW/HIDE PASSWORD
-              suffixIcon: IconButton(
-                icon: Icon(
-                  _obscurePassword ? Icons.visibility_off : Icons.visibility,
-                  color: const Color(0xFF999999),
-                ),
-                onPressed: () {
-                  setState(() {
-                    _obscurePassword = !_obscurePassword;
-                  });
-                },
+              suffixIcon: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  // 👁️ Show/Hide Password
+                  IconButton(
+                    padding: EdgeInsets.zero,
+                    constraints: const BoxConstraints(),
+                    icon: Icon(
+                      _obscurePassword ? Icons.visibility_off : Icons.visibility,
+                      color: const Color(0xFF999999),
+                    ),
+                    onPressed: () {
+                      setState(() => _obscurePassword = !_obscurePassword);
+                    },
+                  ),
+
+                  // 🔵 Ikon Info Password
+                  IconButton(
+                    padding: EdgeInsets.zero,
+                    constraints: const BoxConstraints(),
+                    icon: const Icon(Icons.info_outline, color: Colors.blueGrey),
+                    onPressed: showPasswordInfo,
+                  ),
+                ],
               ),
             ),
           ),
+
 
           // 🔥 INDIKATOR PASSWORD STRENGTH
           if (passwordStrength.isNotEmpty)
