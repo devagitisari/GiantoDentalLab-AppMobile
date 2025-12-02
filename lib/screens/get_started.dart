@@ -101,7 +101,7 @@ class _GetStartedState extends State<GetStarted> {
                 child: CircleAvatar(
                   radius: 40,
                   backgroundColor: Colors.grey.shade300,
-                  child: Icon(icon, color: Colors.red, size: 50),
+                  child: Icon(icon, color: color, size: 50),
                 ),
               ),
             ],
@@ -152,7 +152,6 @@ class _GetStartedState extends State<GetStarted> {
             'gmaps': {'latitude': "", 'longitude': "", 'link': ""},
             'kecamatan': "",
             'kelurahan': "",
-            'kode_pos': "",
             'kota': "",
             'nama_jalan': "",
             'provinsi': "",
@@ -163,14 +162,14 @@ class _GetStartedState extends State<GetStarted> {
       }
 
       final data = (await docRef.get()).data()!;
-      final alamat = data['alamat'] ?? {};
+      final alamat = (data['alamat'] ?? {}) as Map<String, dynamic>;
 
       setState(() => isLoading = false);
 
       if (alamat['nama_jalan'] == null || alamat['nama_jalan'] == "") {
         Navigator.pushReplacement(
           context,
-          MaterialPageRoute(builder: (_) => IsiAlamat(uid: user.uid)),
+          MaterialPageRoute(builder: (_) => IsiAlamatWithMap(uid: user.uid)),
         );
       } else {
         Navigator.pushReplacement(
