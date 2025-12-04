@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
-import 'pengaturan-page.dart';
+import 'package:team_project/screens/pengaturan_page.dart';
 
 class InformasiAkunSimpan extends StatefulWidget {
-  const InformasiAkunSimpan({super.key});
+  final String uid; // uid dari Firebase Auth
+  const InformasiAkunSimpan({super.key, required this.uid});
 
   @override
   State<InformasiAkunSimpan> createState() => _InformasiAkunSimpanState();
@@ -12,7 +13,9 @@ class _InformasiAkunSimpanState extends State<InformasiAkunSimpan> {
   final usernameController = TextEditingController(text: "Devagitisar1");
   final namaController = TextEditingController(text: "Deva Gitisarii");
   final noTelpController = TextEditingController(text: "0877889284");
-  final emailController = TextEditingController(text: "devagitisar49@gmail.com");
+  final emailController = TextEditingController(
+    text: "devagitisar49@gmail.com",
+  );
   final alamatController = TextEditingController(
     text:
         "Jl. Haji Maksum (Sebelah TPA Al Kautsar)\nSAWANGAN, KOTA DEPOK, JAWA BARAT, ID 116511",
@@ -65,7 +68,8 @@ class _InformasiAkunSimpanState extends State<InformasiAkunSimpan> {
 
               // FORM WRAPPER (BATAS LEBAR FIX)
               SizedBox(
-                width: 330, // ⬅ kotak form dibatasi supaya tidak terlalu panjang
+                width:
+                    330, // ⬅ kotak form dibatasi supaya tidak terlalu panjang
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -89,7 +93,9 @@ class _InformasiAkunSimpanState extends State<InformasiAkunSimpan> {
                 onTap: () {
                   Navigator.pushReplacement(
                     context,
-                    MaterialPageRoute(builder: (_) => Pengaturan()),
+                    MaterialPageRoute(
+                      builder: (_) => PengaturanPage(uid: widget.uid),
+                    ),
                   );
                 },
                 child: Container(
@@ -122,8 +128,11 @@ class _InformasiAkunSimpanState extends State<InformasiAkunSimpan> {
   }
 
   // INPUT FIELD
-  Widget inputField(String label, TextEditingController controller,
-      {int? maxLines = 1}) {
+  Widget inputField(
+    String label,
+    TextEditingController controller, {
+    int? maxLines = 1,
+  }) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -144,7 +153,9 @@ class _InformasiAkunSimpanState extends State<InformasiAkunSimpan> {
             filled: true,
             fillColor: Colors.white,
             contentPadding: const EdgeInsets.symmetric(
-                horizontal: 15, vertical: 12),
+              horizontal: 15,
+              vertical: 12,
+            ),
             enabledBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(15),
               borderSide: const BorderSide(color: Color(0xFFD9D9D9)),
