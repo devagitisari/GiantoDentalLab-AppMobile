@@ -179,12 +179,12 @@ class _GetStartedState extends State<GetStarted> {
       }
     } catch (error) {
       setState(() => isLoading = false);
-       showAwesomePopup(
+      showAwesomePopup(
         title: "Gagal Login Google",
         message: "$error",
         color: Colors.red,
         icon: Icons.error_rounded,
-        );
+      );
     }
   }
 

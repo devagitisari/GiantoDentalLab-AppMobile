@@ -7,6 +7,7 @@ import 'package:geolocator/geolocator.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:team_project/screens/home-page.dart';
 
+
 final authOutlineInputBorder = const OutlineInputBorder(
   borderSide: BorderSide(color: Color(0xFFD0D0D0)),
   borderRadius: BorderRadius.all(Radius.circular(10)),
@@ -358,7 +359,7 @@ class _IsiAlamatWithMapState extends State<IsiAlamatWithMap> {
       // Popup sukses
       showAwesomePopupAutoClose(
         title: "Berhasil!",
-        message: "Pilihan berhasil disimpan",
+        message: "Alamat berhasil disimpan",
         icon: Icons.check_circle,
         color: Colors.green,
       );
@@ -478,14 +479,6 @@ class _IsiAlamatWithMapState extends State<IsiAlamatWithMap> {
                 },
                 "updated_at": FieldValue.serverTimestamp(), // <<< ini di root
               }, SetOptions(merge: true));
-
-
-          showAwesomePopupAutoClose(
-            title: "Berhasil",
-            message: "Alamat berhasil ditambahkan",
-            icon: Icons.check_circle,
-            color: Colors.green,
-          );
         }
 
         if (result != null) {
@@ -506,7 +499,7 @@ class _IsiAlamatWithMapState extends State<IsiAlamatWithMap> {
           border: Border.all(color: const Color(0xFFD0D0D0)),
         ),
         child: Text(
-          selectedProvinsi == null ? "Pilih Provinsi" : displayText(),
+          selectedProvinsi == null ? "Provinsi/Kota/Kecamatan/Kelurahan" : displayText(),
           style: const TextStyle(
             fontSize: 14,
             color: Color(0xFF0C3345),
@@ -661,7 +654,7 @@ class _IsiAlamatWithMapState extends State<IsiAlamatWithMap> {
 
                 const SizedBox(height: 18),
                 _field(
-                  "Nama Jalan / Gedung / No Rumah",
+                  "Nama Jalan/Gedung/No.Rumah",
                   controller: _jalanController,
                   validator: (v) => (v == null || v.isEmpty)
                       ? "Nama jalan wajib diisi"
@@ -669,7 +662,7 @@ class _IsiAlamatWithMapState extends State<IsiAlamatWithMap> {
                 ),
                 const SizedBox(height: 12),
                 _field(
-                  "Detail Lainnya (Blok / Patokan)",
+                  "Detail Lainnya (Blok/Patokan)",
                   controller: _detailController,
                 ),
                 const SizedBox(height: 12),
