@@ -1,4 +1,5 @@
-<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+package="com.example.team_project">
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
 
@@ -7,10 +8,12 @@
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
 
+        android:enableOnBackInvokedCallback="true"
+
         <!-- Taruh API key di sini, bukan di activity -->
         <meta-data
             android:name="com.google.android.geo.API_KEY"
-            android:value="AIzaSyAl_PkdSZLq3mBSa3VQoMRWZQ5o0JzUUlQ"/>
+            android:value="AIzaSyBQtEEBfYTWY_TJ76GJeAQ5AHqtvQo5Tr0"/>
 
         <activity
             android:name=".MainActivity"

@@ -5,7 +5,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'package:team_project/screens/home-page.dart';
+import 'package:team_project/screens/home_page.dart';
 
 final authOutlineInputBorder = const OutlineInputBorder(
   borderSide: BorderSide(color: Color(0xFFD0D0D0)),
