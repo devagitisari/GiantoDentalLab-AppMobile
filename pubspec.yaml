@@ -47,6 +47,7 @@ dependencies:
   url_launcher: ^6.1.7
   image_picker: ^1.2.1
   firebase_storage: ^13.0.4
+  font_awesome_flutter: ^10.7.0
 
 dev_dependencies:
   flutter_test:
