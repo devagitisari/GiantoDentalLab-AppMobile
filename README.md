@@ -1,16 +1,23 @@
-# team_project
+# GiantoDental Lab - Mobile App
 
-A new Flutter project.
+**GiantoDental Lab** is a mobile application designed to streamline customer bookings and service requests for dental lab services.  
+The app provides a user-friendly interface for clients to schedule, track, and manage their dental service orders efficiently.
 
-## Getting Started
+## Key Features
 
-This project is a starting point for a Flutter application.
+- **Service Booking**: Clients can request dental services and select preferred dates and times.  
+- **Order Tracking**: Real-time updates on the status of ongoing dental service orders.  
+- **Notifications**: Alerts for appointment confirmation, status updates, and reminders.  
+- **User Profile**: Customers can manage their personal information and order history.  
+- **Secure Authentication**: User login and registration with data stored securely.  
 
-A few resources to get you started if this is your first Flutter project:
+## Tech Stack
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+- **Flutter** for cross-platform mobile development  
+- **Firebase** for authentication, real-time database, and cloud storage  
+- **Cloudinary** for image uploads (if applicable)  
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+Author by 
+Deva Gitisari
+Nayla Natania Putri
+Restu Putri Nisrina
