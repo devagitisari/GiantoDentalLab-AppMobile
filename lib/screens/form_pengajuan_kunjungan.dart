@@ -1,13 +1,17 @@
 import 'dart:io';
+import 'dart:convert';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_storage/firebase_storage.dart';
 import 'package:image_picker/image_picker.dart';
-import 'home_page.dart';
+import 'package:team_project/screens/pengajuan_list.dart';
 
-class FormPengajuanKunjungan extends StatefulWidget { 
-  final String uid;
-  const FormPengajuanKunjungan({super.key, required this.uid});
+class FormPengajuanKunjungan extends StatefulWidget {
+  final String? uid;
+  final String? orderId; // tambahkan ini
+
+  const FormPengajuanKunjungan({super.key, this.uid, this.orderId});
 
   @override
   State<FormPengajuanKunjungan> createState() => _FormPengajuanKunjunganState();
@@ -18,15 +22,18 @@ class _FormPengajuanKunjunganState extends State<FormPengajuanKunjungan> {
   final TextEditingController teleponController = TextEditingController();
   final TextEditingController keluhanController = TextEditingController();
   String? pernahJasa;
-  File? pickedImage; // File gambar dari device
-  String? fotoUrl;   // URL gambar di Firebase Storage
+  File? pickedImage; // Foto dari device
+  String? fotoUrl; // URL foto di Firebase Storage setelah submit
   bool isLoading = false;
   bool isPickingImage = false;
 
   @override
   void initState() {
     super.initState();
-    fetchPelangganData(); // Ambil data otomatis saat form dibuka
+    fetchPelangganData();
+    if (widget.orderId != null) {
+      fetchOrderData(widget.orderId!);
+    }
   }
 
   @override
@@ -37,7 +44,139 @@ class _FormPengajuanKunjunganState extends State<FormPengajuanKunjungan> {
     super.dispose();
   }
 
-  // Ambil data pelanggan dari Firestore
+  Future<void> fetchOrderData(String orderId) async {
+    try {
+      DocumentSnapshot doc = await FirebaseFirestore.instance
+          .collection('order')
+          .doc(orderId)
+          .get();
+
+      if (doc.exists) {
+        Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
+        setState(() {
+          namaController.text = data['nama'] ?? '';
+          teleponController.text = data['telepon'] ?? '';
+          keluhanController.text = data['keluhan'] ?? '';
+          pernahJasa = data['pemakaian_jasa'];
+          fotoUrl = data['foto']; // foto lama
+        });
+      }
+    } catch (e) {
+      print("Error fetching order data: $e");
+    }
+  }
+
+  Future<void> showAwesomePopupAutoClose({
+    required String title,
+    required String message,
+    Color color = const Color(0xFF0C3345),
+    IconData icon = Icons.check_circle,
+  }) async {
+    return showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (_) {
+        Future.delayed(const Duration(milliseconds: 1200), () {
+          if (Navigator.canPop(context)) Navigator.pop(context);
+        });
+
+        return Dialog(
+          backgroundColor: Colors.transparent,
+          child: Stack(
+            alignment: Alignment.center,
+            children: [
+              Container(
+                margin: const EdgeInsets.only(top: 40),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 22,
+                  vertical: 26,
+                ),
+                decoration: BoxDecoration(
+                  color: Colors.white.withOpacity(0.92),
+                  borderRadius: BorderRadius.circular(22),
+                  boxShadow: [
+                    BoxShadow(
+                      blurRadius: 20,
+                      color: Colors.black.withOpacity(0.15),
+                      offset: const Offset(0, 10),
+                    ),
+                  ],
+                ),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const SizedBox(height: 40),
+                    Text(
+                      title,
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontFamily: 'Poppins',
+                        fontWeight: FontWeight.w700,
+                        fontSize: 18,
+                        color: color,
+                      ),
+                    ),
+                    const SizedBox(height: 10),
+                    Text(
+                      message,
+                      textAlign: TextAlign.center,
+                      style: const TextStyle(
+                        fontFamily: 'Poppins',
+                        fontSize: 14,
+                        color: Colors.black87,
+                      ),
+                    ),
+                    const SizedBox(height: 10),
+                  ],
+                ),
+              ),
+              Positioned(
+                top: 0,
+                child: CircleAvatar(
+                  radius: 40,
+                  backgroundColor: Colors.grey.shade300,
+                  child: Icon(icon, color: color, size: 50),
+                ),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  Future<String?> uploadToCloudinary(File imageFile) async {
+    const cloudName = "YOUR_CLOUD_NAME";
+    const uploadPreset = "YOUR_UPLOAD_PRESET";
+
+    final uri = Uri.parse(
+      "https://api.cloudinary.com/v1_1/$cloudName/image/upload",
+    );
+
+    final request = http.MultipartRequest("POST", uri)
+      ..fields['upload_preset'] = uploadPreset
+      ..fields['folder'] = "team_project"
+      ..files.add(
+        await http.MultipartFile.fromPath(
+          'file',
+          imageFile.path,
+        ),
+      );
+
+    final response = await request.send();
+
+    if (response.statusCode == 200) {
+      final responseData =
+          jsonDecode(await response.stream.bytesToString());
+      return responseData['secure_url']; // URL HTTPS
+    } else {
+      print("Upload Cloudinary gagal: ${response.statusCode}");
+      return null;
+    }
+  }
+
+
+  // Ambil data pelanggan otomatis
   Future<void> fetchPelangganData() async {
     try {
       DocumentSnapshot doc = await FirebaseFirestore.instance
@@ -57,7 +196,7 @@ class _FormPengajuanKunjunganState extends State<FormPengajuanKunjungan> {
     }
   }
 
-  // Fungsi pick foto dari gallery
+  // Pick foto dari gallery
   Future<void> pickImage() async {
     if (isPickingImage) return;
     isPickingImage = true;
@@ -78,30 +217,77 @@ class _FormPengajuanKunjunganState extends State<FormPengajuanKunjungan> {
     }
   }
 
-  // Fungsi upload ke Firebase Storage
-  Future<void> uploadImage() async {
-    if (pickedImage == null) return;
-
-    String fileName = "order_images/${DateTime.now().millisecondsSinceEpoch}.png";
-    Reference ref = FirebaseStorage.instance.ref().child(fileName);
-    UploadTask uploadTask = ref.putFile(pickedImage!);
-
-    final snapshot = await uploadTask;
-    String downloadUrl = await snapshot.ref.getDownloadURL();
-
-    setState(() {
-      fotoUrl = downloadUrl;
-    });
+  // Preview & hapus foto sebelum submit
+  Widget buildImagePreview() {
+    if (pickedImage != null) {
+      // Foto baru dipilih
+      return Column(
+        children: [
+          Container(
+            width: double.infinity,
+            height: 200,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(10),
+              border: Border.all(color: const Color(0xFFD0D0D0)),
+            ),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(10),
+              child: Image.file(pickedImage!, fit: BoxFit.cover),
+            ),
+          ),
+          // Tombol hapus foto
+          Row(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: [
+              TextButton.icon(
+                onPressed: () {
+                  setState(() => pickedImage = null);
+                },
+                icon: const Icon(Icons.delete, color: Colors.red),
+                label: const Text(
+                  "Hapus Foto",
+                  style: TextStyle(color: Colors.red),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 16),
+        ],
+      );
+    } else if (fotoUrl != null && fotoUrl!.isNotEmpty) {
+      // Foto lama (dari Firestore)
+      return Column(
+        children: [
+          Container(
+            width: double.infinity,
+            height: 200,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(10),
+              border: Border.all(color: const Color(0xFFD0D0D0)),
+            ),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(10),
+              child: Image.network(fotoUrl!, fit: BoxFit.cover),
+            ),
+          ),
+          const SizedBox(height: 16),
+        ],
+      );
+    } else {
+      return const SizedBox();
+    }
   }
 
-  // Submit form ke Firestore
   Future<void> submitForm() async {
     if (namaController.text.isEmpty ||
         teleponController.text.isEmpty ||
         keluhanController.text.isEmpty ||
         pernahJasa == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Harap isi semua field")),
+      showAwesomePopupAutoClose(
+        title: "Gagal",
+        message: "Harap isi semua field",
+        color: Colors.red,
+        icon: Icons.error,
       );
       return;
     }
@@ -109,39 +295,64 @@ class _FormPengajuanKunjunganState extends State<FormPengajuanKunjungan> {
     setState(() => isLoading = true);
 
     try {
+      String? uploadedFotoUrl;
+
       if (pickedImage != null) {
-        await uploadImage();
+        uploadedFotoUrl = await uploadToCloudinary(pickedImage!);
       }
 
-      String orderId = FirebaseFirestore.instance.collection('order').doc().id;
+      final docRef = widget.orderId != null
+          ? FirebaseFirestore.instance.collection('order').doc(widget.orderId)
+          : FirebaseFirestore.instance.collection('order').doc();
 
-      await FirebaseFirestore.instance.collection('order').doc(orderId).set({
-        'id_order': orderId,
+      String status = "menunggu";
+      if (widget.orderId != null) {
+        final docSnapshot = await docRef.get();
+        if (docSnapshot.exists) {
+          status = docSnapshot['status'] ?? "menunggu";
+        }
+      }
+
+      // Simpan di collection order
+      await docRef.set({
+        'id_order': docRef.id,
         'id_pelanggan': widget.uid,
-        'id_layanan': "",
-        'id_pelayanan': "",
         'pemakaian_jasa': pernahJasa,
-        'nama': namaController.text,
-        'telepon': teleponController.text,
         'keluhan': keluhanController.text,
-        'foto': fotoUrl ?? "",
-        'status': "pending",
-        'created_at': FieldValue.serverTimestamp(),
+        'foto': uploadedFotoUrl ?? fotoUrl ?? "",
+        'status': status,
+        'created_at': widget.orderId != null
+            ? FieldValue.serverTimestamp()
+            : FieldValue.serverTimestamp(),
         'updated_at': FieldValue.serverTimestamp(),
       });
 
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Pengajuan berhasil dikirim")),
+      showAwesomePopupAutoClose(
+        title: "Sukses",
+        message: widget.orderId != null
+            ? "Detail berhasil diperbarui"
+            : "Pengajuan berhasil dikirim",
+        color: Colors.green,
+        icon: Icons.check_circle,
       );
 
-      Navigator.pushAndRemoveUntil(
-        context,
-        MaterialPageRoute(builder: (context) => HomePage(uid: widget.uid)),
-        (route) => false,
-      );
+      Future.delayed(const Duration(milliseconds: 1200), () {
+        Navigator.pushAndRemoveUntil(
+          context,
+          MaterialPageRoute(
+            builder: (context) => PengajuanKunjunganListPage(
+              uid: FirebaseAuth.instance.currentUser?.uid ?? '',
+            ),
+          ),
+          (route) => false,
+        );
+      });
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Terjadi kesalahan: $e")),
+      showAwesomePopupAutoClose(
+        title: "Gagal",
+        message: "Terjadi kesalahan: $e",
+        color: Colors.red,
+        icon: Icons.error,
       );
     } finally {
       setState(() => isLoading = false);
@@ -158,34 +369,38 @@ class _FormPengajuanKunjunganState extends State<FormPengajuanKunjungan> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const SizedBox(height: 20),
-              Stack(
-                alignment: Alignment.center,
+              Row(
                 children: [
-                  // BACK BUTTON
-                  Align(
-                    alignment: Alignment.centerLeft,
-                    child: GestureDetector(
-                      onTap: () {
-                        Navigator.pushAndRemoveUntil(
-                          context,
-                          MaterialPageRoute(builder: (context) => HomePage(uid: widget.uid)),
-                          (route) => false,
-                        );
-                      },
-                      child: Container(
-                        width: 48,
-                        height: 48,
-                        decoration: const BoxDecoration(
-                          color: Color(0xFFE7E7E7),
-                          shape: BoxShape.circle,
+                  GestureDetector(
+                    onTap: () {
+                      Navigator.pushAndRemoveUntil(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => PengajuanKunjunganListPage(
+                            uid: FirebaseAuth.instance.currentUser?.uid ?? '',
+                          ),
                         ),
-                        child: const Icon(Icons.arrow_back, color: Colors.black),
+                        (route) => false,
+                      );
+                    },
+                    child: Container(
+                      width: 48,
+                      height: 48,
+                      decoration: BoxDecoration(
+                        color: const Color(0xFFE7E7E7),
+                        shape: BoxShape.circle,
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.1),
+                            blurRadius: 4,
+                            offset: const Offset(0, 2),
+                          ),
+                        ],
                       ),
+                      child: const Icon(Icons.arrow_back, color: Color(0xFF0C3345), size: 28),
                     ),
                   ),
-
-                  // TITLE
+                  const Spacer(),
                   const Text(
                     'Form Pengajuan',
                     style: TextStyle(
@@ -195,10 +410,10 @@ class _FormPengajuanKunjunganState extends State<FormPengajuanKunjungan> {
                       fontFamily: 'Poppins',
                     ),
                   ),
+                  const Spacer(flex: 2),
                 ],
               ),
               const SizedBox(height: 30),
-
               const Text(
                 'Isi informasi di bawah untuk melakukan pengajuan konsultasi',
                 style: TextStyle(
@@ -209,26 +424,29 @@ class _FormPengajuanKunjunganState extends State<FormPengajuanKunjungan> {
               ),
               const SizedBox(height: 24),
 
-
-
               // Nama
               TextFormField(
                 controller: namaController,
-                readOnly: true, // jadi user tidak bisa ubah
+                readOnly: true,
                 decoration: InputDecoration(
                   labelText: "Nama",
                   hintText: "Nama pelanggan",
                   floatingLabelBehavior: FloatingLabelBehavior.always,
                   labelStyle: const TextStyle(
-                      fontSize: 14,
-                      color: Color(0xFF0C3345),
-                      fontWeight: FontWeight.w600,
-                      fontFamily: 'Poppins'),
+                    fontSize: 18,
+                    color: Color(0xFF0C3345),
+                    fontWeight: FontWeight.w600,
+                    fontFamily: 'Poppins',
+                  ),
                   hintStyle: const TextStyle(
-                      fontSize: 13,
-                      color: Color(0xFF999999),
-                      fontFamily: 'Poppins'),
-                  contentPadding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+                    fontSize: 13,
+                    color: Color(0xFF999999),
+                    fontFamily: 'Poppins',
+                  ),
+                  contentPadding: const EdgeInsets.symmetric(
+                    horizontal: 24,
+                    vertical: 16,
+                  ),
                   border: formOutlineInputBorder,
                   enabledBorder: formOutlineInputBorder,
                   focusedBorder: formOutlineInputBorder,
@@ -241,22 +459,27 @@ class _FormPengajuanKunjunganState extends State<FormPengajuanKunjungan> {
               // Telepon
               TextFormField(
                 controller: teleponController,
-                readOnly: true, // jadi user tidak bisa ubah
+                readOnly: true,
                 keyboardType: TextInputType.phone,
                 decoration: InputDecoration(
                   labelText: "No Telepon",
                   hintText: "Nomor pelanggan",
                   floatingLabelBehavior: FloatingLabelBehavior.always,
                   labelStyle: const TextStyle(
-                      fontSize: 14,
-                      color: Color(0xFF0C3345),
-                      fontWeight: FontWeight.w600,
-                      fontFamily: 'Poppins'),
+                    fontSize: 18,
+                    color: Color(0xFF0C3345),
+                    fontWeight: FontWeight.w600,
+                    fontFamily: 'Poppins',
+                  ),
                   hintStyle: const TextStyle(
-                      fontSize: 13,
-                      color: Color(0xFF999999),
-                      fontFamily: 'Poppins'),
-                  contentPadding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+                    fontSize: 13,
+                    color: Color(0xFF999999),
+                    fontFamily: 'Poppins',
+                  ),
+                  contentPadding: const EdgeInsets.symmetric(
+                    horizontal: 24,
+                    vertical: 16,
+                  ),
                   border: formOutlineInputBorder,
                   enabledBorder: formOutlineInputBorder,
                   focusedBorder: formOutlineInputBorder,
@@ -266,51 +489,98 @@ class _FormPengajuanKunjunganState extends State<FormPengajuanKunjungan> {
               ),
               const SizedBox(height: 16),
 
-              // Foto
-              TextFormField(
-                readOnly: true,
-                onTap: () async {
-                  if (isPickingImage) return; // mencegah dipanggil lagi
-                  isPickingImage = true;
-
-                  try {
-                    final picker = ImagePicker();
-                    final picked = await picker.pickImage(source: ImageSource.gallery);
-
-                    if (picked != null) {
-                      setState(() {
-                        pickedImage = File(picked.path);
-                      });
-                    }
-                  } catch (e) {
-                    print(e);
-                  } finally {
-                    isPickingImage = false;
-                  }
-                },
-                decoration: InputDecoration(
-                  labelText: "Foto",
-                  floatingLabelBehavior: FloatingLabelBehavior.always,
-                  hintText: pickedImage != null ? "Foto siap diupload" : "Upload Foto",
-                  labelStyle: const TextStyle(
-                      fontSize: 14,
+              // Upload Foto dengan style label sama seperti TextFormField
+              GestureDetector(
+                onTap: pickImage,
+                child: InputDecorator(
+                  decoration: InputDecoration(
+                    labelText: "Foto",
+                    floatingLabelBehavior: FloatingLabelBehavior.always,
+                    labelStyle: const TextStyle(
+                      fontSize: 18,
                       color: Color(0xFF0C3345),
                       fontWeight: FontWeight.w600,
-                      fontFamily: 'Poppins'),
-                  hintStyle: const TextStyle(
-                    fontSize: 13,
-                    color: Color(0xFF999999),
-                    fontFamily: 'Poppins',
+                      fontFamily: 'Poppins',
+                    ),
+                    floatingLabelStyle: const TextStyle(
+                      fontSize: 18,
+                      color: Color(0xFF0C3345),
+                      fontWeight: FontWeight.w600,
+                      fontFamily: 'Poppins',
+                    ),
+                    contentPadding: const EdgeInsets.symmetric(
+                      horizontal: 24,
+                      vertical: 16,
+                    ),
+                    border: formOutlineInputBorder,
+                    enabledBorder: formOutlineInputBorder,
+                    focusedBorder: formOutlineInputBorder,
+                    fillColor: Colors.white,
+                    filled: true,
                   ),
-                  contentPadding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
-                  border: formOutlineInputBorder,
-                  enabledBorder: formOutlineInputBorder,
-                  focusedBorder: formOutlineInputBorder,
-                  fillColor: Colors.white,
-                  filled: true,
-                  suffixIcon: const Icon(Icons.upload_file, color: Color(0xFFD0D0D0)),
+                  child: Row(
+                    children: [
+                      if (pickedImage != null)
+                        Stack(
+                          clipBehavior: Clip.none,
+                          children: [
+                            ClipRRect(
+                              borderRadius: BorderRadius.circular(8),
+                              child: Image.file(
+                                pickedImage!,
+                                width: 60,
+                                height: 60,
+                                fit: BoxFit.cover,
+                              ),
+                            ),
+                            Positioned(
+                              top: -8,
+                              right: -8,
+                              child: GestureDetector(
+                                onTap: () => setState(() => pickedImage = null),
+                                child: Container(
+                                  width: 20,
+                                  height: 20,
+                                  decoration: const BoxDecoration(
+                                    color: Colors.red,
+                                    shape: BoxShape.circle,
+                                  ),
+                                  child: const Icon(
+                                    Icons.close,
+                                    size: 14,
+                                    color: Colors.white,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
+                        )
+                      else
+                        const Icon(
+                          Icons.upload_file,
+                          size: 36,
+                          color: Color(0xFFD0D0D0),
+                        ),
+
+                      const SizedBox(width: 12),
+
+                      Expanded(
+                        child: Text(
+                          pickedImage != null
+                              ? "Foto siap diupload"
+                              : "Upload Foto",
+                          style: const TextStyle(
+                            fontSize: 14,
+                            color: Color(0xFF999999),
+                            fontFamily: 'Poppins',
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ),
+
               const SizedBox(height: 16),
 
               // Dropdown
@@ -320,12 +590,15 @@ class _FormPengajuanKunjunganState extends State<FormPengajuanKunjungan> {
                   labelText: "Pernah memakai jasa?",
                   floatingLabelBehavior: FloatingLabelBehavior.always,
                   labelStyle: const TextStyle(
-                      fontSize: 14,
-                      color: Color(0xFF0C3345),
-                      fontWeight: FontWeight.w600,
-                      fontFamily: 'Poppins'),
-                  contentPadding:
-                      const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+                    fontSize: 18,
+                    color: Color(0xFF0C3345),
+                    fontWeight: FontWeight.w600,
+                    fontFamily: 'Poppins',
+                  ),
+                  contentPadding: const EdgeInsets.symmetric(
+                    horizontal: 24,
+                    vertical: 16,
+                  ),
                   border: formOutlineInputBorder,
                   enabledBorder: formOutlineInputBorder,
                   focusedBorder: formOutlineInputBorder,
@@ -335,9 +608,10 @@ class _FormPengajuanKunjunganState extends State<FormPengajuanKunjungan> {
                 hint: const Text(
                   "-- Pilih Jawaban --",
                   style: TextStyle(
-                      fontSize: 13,
-                      color: Color(0xFF999999),
-                      fontFamily: 'Poppins'),
+                    fontSize: 13,
+                    color: Color(0xFF999999),
+                    fontFamily: 'Poppins',
+                  ),
                 ),
                 items: const [
                   DropdownMenuItem(value: 'Ya', child: Text('Ya')),
@@ -356,16 +630,20 @@ class _FormPengajuanKunjunganState extends State<FormPengajuanKunjungan> {
                   hintText: "Masukkan Keluhan",
                   floatingLabelBehavior: FloatingLabelBehavior.always,
                   labelStyle: const TextStyle(
-                      fontSize: 14,
-                      color: Color(0xFF0C3345),
-                      fontWeight: FontWeight.w600,
-                      fontFamily: 'Poppins'),
+                    fontSize: 18,
+                    color: Color(0xFF0C3345),
+                    fontWeight: FontWeight.w600,
+                    fontFamily: 'Poppins',
+                  ),
                   hintStyle: const TextStyle(
-                      fontSize: 13,
-                      color: Color(0xFF999999),
-                      fontFamily: 'Poppins'),
-                  contentPadding:
-                      const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+                    fontSize: 13,
+                    color: Color(0xFF999999),
+                    fontFamily: 'Poppins',
+                  ),
+                  contentPadding: const EdgeInsets.symmetric(
+                    horizontal: 24,
+                    vertical: 16,
+                  ),
                   border: formOutlineInputBorder,
                   enabledBorder: formOutlineInputBorder,
                   focusedBorder: formOutlineInputBorder,
@@ -392,10 +670,11 @@ class _FormPengajuanKunjunganState extends State<FormPengajuanKunjungan> {
                       : const Text(
                           "Ajukan Kunjungan",
                           style: TextStyle(
-                              fontSize: 16,
-                              color: Colors.white,
-                              fontWeight: FontWeight.w600,
-                              fontFamily: 'Poppins'),
+                            fontSize: 14,
+                            color: Colors.white,
+                            fontWeight: FontWeight.w600,
+                            fontFamily: 'Poppins',
+                          ),
                         ),
                 ),
               ),

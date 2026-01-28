@@ -18,17 +18,21 @@ class _LoginScreenState extends State<LoginScreen> {
   final _passwordController = TextEditingController();
   bool _obscurePassword = true;
   bool _isLoading = false;
-
-  void showAwesomePopup({
+  void showAwesomePopupAutoClose({
     required String title,
     required String message,
     Color color = const Color(0xFF0C3345),
-    IconData icon = Icons.info,
+    IconData icon = Icons.check_circle,
   }) {
     showDialog(
       context: context,
-      barrierDismissible: false, // ⬅ TARUH DI SINI
+      barrierDismissible: false,
       builder: (_) {
+        // Auto close dialog setelah 1.2 detik
+        Future.delayed(const Duration(milliseconds: 1200), () {
+          if (Navigator.canPop(context)) Navigator.pop(context);
+        });
+
         return Dialog(
           backgroundColor: Colors.transparent,
           child: Stack(
@@ -75,25 +79,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         color: Colors.black87,
                       ),
                     ),
-                    const SizedBox(height: 20),
-                    ElevatedButton(
-                      onPressed: () => Navigator.pop(context),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: color,
-                        foregroundColor: Colors.white,
-                        minimumSize: const Size(120, 45),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                      ),
-                      child: const Text(
-                        "Mengerti",
-                        style: TextStyle(
-                          fontFamily: 'Poppins',
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                    ),
+                    const SizedBox(height: 10),
                   ],
                 ),
               ),
@@ -117,7 +103,7 @@ class _LoginScreenState extends State<LoginScreen> {
       color: Colors.black.withOpacity(0.4),
       child: const Center(
         child: CircularProgressIndicator(
-          color: Color(0xFF0C3345),
+          color: Colors.white,
           strokeWidth: 3,
         ),
       ),
@@ -142,8 +128,7 @@ class _LoginScreenState extends State<LoginScreen> {
         final docSnap = await docRef.get();
 
         if (!docSnap.exists) {
-          // Akun belum terdaftar di Firestore
-          showAwesomePopup(
+          showAwesomePopupAutoClose(
             title: "Akun Tidak Terdaftar",
             message: "Email belum pernah digunakan. Silakan Sign Up dulu.",
             color: Colors.red,
@@ -151,8 +136,20 @@ class _LoginScreenState extends State<LoginScreen> {
           );
         } else {
           final data = docSnap.data() as Map<String, dynamic>;
-          final alamat = data['alamat'] ?? {};
 
+          // 🔥 Cek status akun
+          final status = data['status'] ?? 'aktif';
+          if (status == 'nonaktif') {
+            showAwesomePopupAutoClose(
+              title: "Akun Nonaktif",
+              message: "Akun Anda saat ini nonaktif. Silakan hubungi admin.",
+              color: Colors.red,
+              icon: Icons.block,
+            );
+            return; // hentikan login
+          }
+
+          final alamat = data['alamat'] ?? {};
           if ((alamat['nama_jalan'] ?? "").isEmpty) {
             Navigator.pushReplacement(
               context,
@@ -168,14 +165,14 @@ class _LoginScreenState extends State<LoginScreen> {
       }
     } on FirebaseAuthException catch (e) {
       if (e.code == 'user-not-found') {
-        showAwesomePopup(
+        showAwesomePopupAutoClose(
           title: "Akun Tidak Terdaftar",
           message: "Email belum pernah digunakan. Silakan Sign Up dulu.",
           color: Colors.red,
           icon: Icons.warning_amber_rounded,
         );
       } else {
-        showAwesomePopup(
+        showAwesomePopupAutoClose(
           title: "Login Gagal",
           message: e.message ?? "Terjadi kesalahan.",
           color: Colors.red,
@@ -186,6 +183,7 @@ class _LoginScreenState extends State<LoginScreen> {
       setState(() => _isLoading = false);
     }
   }
+
 
   Future<void> _signInWithGoogle() async {
     setState(() => _isLoading = true);
@@ -219,6 +217,7 @@ class _LoginScreenState extends State<LoginScreen> {
           'nama_pelanggan': user.displayName ?? '',
           'email': user.email ?? '',
           'password': '',
+          'status': 'aktif', // 🔥 default akun baru aktif
           'alamat': {
             'detail_jalan': "",
             'gmaps': {'latitude': "", 'longitude': "", 'link': ""},
@@ -233,12 +232,24 @@ class _LoginScreenState extends State<LoginScreen> {
         });
       }
 
+      // 🔥 Ambil data terbaru dan cek status akun
       final finalSnap = await docRef.get();
       final data = finalSnap.data() != null 
           ? finalSnap.data() as Map<String, dynamic> 
           : <String, dynamic>{};
-      final alamat = data['alamat'] as Map<String, dynamic>? ?? {};
 
+      final status = data['status'] ?? 'aktif';
+      if (status == 'nonaktif') {
+        showAwesomePopupAutoClose(
+          title: "Akun Nonaktif",
+          message: "Akun Anda saat ini nonaktif. Silakan hubungi admin.",
+          color: Colors.red,
+          icon: Icons.block,
+        );
+        return; // hentikan login
+      }
+
+      final alamat = data['alamat'] as Map<String, dynamic>? ?? {};
       if ((alamat['nama_jalan'] ?? "").isEmpty) {
         Navigator.pushReplacement(
           context,
@@ -251,7 +262,7 @@ class _LoginScreenState extends State<LoginScreen> {
         );
       }
     } catch (error) {
-      showAwesomePopup(
+      showAwesomePopupAutoClose(
         title: "Gagal Login Google",
         message: "$error",
         color: Colors.red,
@@ -262,8 +273,6 @@ class _LoginScreenState extends State<LoginScreen> {
     }
   }
 
-
-
   @override
   Widget build(BuildContext context) {
     return Stack(
@@ -272,10 +281,10 @@ class _LoginScreenState extends State<LoginScreen> {
           backgroundColor: Colors.white,
           body: SafeArea(
             child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
-              child: SingleChildScrollView(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+            child: SingleChildScrollView(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     const SizedBox(height: 40),
 
@@ -318,7 +327,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         labelText: "Email",
                         floatingLabelBehavior: FloatingLabelBehavior.always,
                         labelStyle: const TextStyle(
-                          fontSize: 14,
+                          fontSize: 18,
                           color: Color(0xFF0C3345),
                           fontWeight: FontWeight.w600,
                           fontFamily: "Poppins",
@@ -349,7 +358,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         hintText: "Masukkan kata sandi anda",
                         floatingLabelBehavior: FloatingLabelBehavior.always,
                         labelStyle: const TextStyle(
-                          fontSize: 14,
+                          fontSize: 18,
                           color: Color(0xFF0C3345),
                           fontWeight: FontWeight.w600,
                           fontFamily: "Poppins",
@@ -469,10 +478,10 @@ class _LoginScreenState extends State<LoginScreen> {
                           child: const Text(
                             "Sign Up",
                             style: TextStyle(
-                              fontFamily: 'Poppins',
-                              fontSize: 12,
                               color: Color(0xFF0C3345),
-                              fontWeight: FontWeight.w600,
+                              fontSize: 12,
+                              fontFamily: 'Poppins',
+                              fontWeight: FontWeight.w700,
                             ),
                           ),
                         ),

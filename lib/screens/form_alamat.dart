@@ -7,7 +7,6 @@ import 'package:geolocator/geolocator.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:team_project/screens/home_page.dart';
 
-
 final authOutlineInputBorder = const OutlineInputBorder(
   borderSide: BorderSide(color: Color(0xFFD0D0D0)),
   borderRadius: BorderRadius.all(Radius.circular(10)),
@@ -30,10 +29,123 @@ class _IsiAlamatWithMapState extends State<IsiAlamatWithMap> {
   final _formKey = GlobalKey<FormState>();
   final _jalanController = TextEditingController();
   final _detailController = TextEditingController();
+  final _alamatRingkasanController = TextEditingController();
 
   GoogleMapController? _mapController;
   LatLng _currentPosition = const LatLng(-6.200000, 106.816666);
   Marker? _marker;
+  bool _mapReady = false;
+  bool _locationGranted = false; // default false
+  bool get _controllerValid => mounted && _mapController != null && _mapReady;
+
+
+  Future<bool?> showAwesomePopupConfirm({
+    required BuildContext context,
+    required String title,
+    required String message,
+    IconData icon = Icons.location_off_rounded,
+    Color color = Colors.orange,
+  }) {
+    return showDialog<bool>(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) {
+        return Dialog(
+          backgroundColor: Colors.transparent,
+          child: Stack(
+            alignment: Alignment.center,
+            children: [
+              Container(
+                margin: const EdgeInsets.only(top: 40),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 22,
+                  vertical: 26,
+                ),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(22),
+                  boxShadow: [
+                    BoxShadow(
+                      blurRadius: 20,
+                      color: Colors.black.withOpacity(0.15),
+                      offset: const Offset(0, 10),
+                    ),
+                  ],
+                ),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const SizedBox(height: 40),
+                    Text(
+                      title,
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontFamily: 'Poppins',
+                        fontWeight: FontWeight.w700,
+                        fontSize: 18,
+                        color: color,
+                      ),
+                    ),
+                    const SizedBox(height: 10),
+                    Text(
+                      message,
+                      textAlign: TextAlign.center,
+                      style: const TextStyle(
+                        fontFamily: 'Poppins',
+                        fontSize: 14,
+                        color: Colors.black87,
+                      ),
+                    ),
+                    const SizedBox(height: 25),
+
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        // BATAL
+                        TextButton(
+                          onPressed: () => Navigator.pop(context, false),
+                          child: const Text(
+                            "Batal",
+                            style: TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w600,
+                              color: Colors.grey,
+                            ),
+                          ),
+                        ),
+
+                        // AKTIFKAN GPS
+                        TextButton(
+                          onPressed: () => Navigator.pop(context, true),
+                          child: Text(
+                            "Aktifkan",
+                            style: TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w700,
+                              color: color,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+
+              Positioned(
+                top: 0,
+                child: CircleAvatar(
+                  radius: 40,
+                  backgroundColor: Colors.grey.shade300,
+                  child: Icon(icon, color: color, size: 50),
+                ),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
 
   void showAwesomePopupAutoClose({
     required String title,
@@ -120,36 +232,25 @@ class _IsiAlamatWithMapState extends State<IsiAlamatWithMap> {
     bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
 
     if (!serviceEnabled) {
-      bool? openSettings = await showDialog(
+      bool? openSettings = await showAwesomePopupConfirm(
         context: context,
-        builder: (context) {
-          return AlertDialog(
-            title: const Text("GPS Tidak Aktif"),
-            content: const Text(
-              "Untuk mengambil lokasi, aktifkan GPS terlebih dahulu.",
-            ),
-            actions: [
-              TextButton(
-                child: const Text("Batal"),
-                onPressed: () => Navigator.pop(context, false),
-              ),
-              TextButton(
-                child: const Text("Nyalakan GPS"),
-                onPressed: () => Navigator.pop(context, true),
-              ),
-            ],
-          );
-        },
+        title: "GPS Tidak Aktif",
+        message: "Aktifkan GPS untuk mengambil lokasi.",
+        icon: Icons.gps_off_rounded,
+        color: Colors.orange,
       );
 
       if (openSettings == true) {
         await Geolocator.openLocationSettings();
-        bool serviceEnabledAfter = await Geolocator.isLocationServiceEnabled();
-        if (serviceEnabledAfter) {
+
+        bool enabledAfter = await Geolocator.isLocationServiceEnabled();
+        if (enabledAfter) {
           await _ambilLokasiSaatIni();
           return true;
         }
       }
+
+      return false;
     }
 
     // Cek permission GPS
@@ -172,6 +273,7 @@ class _IsiAlamatWithMapState extends State<IsiAlamatWithMap> {
 
   bool _isLoading = false;
   bool _gettingLocation = false;
+  bool _alamatTersedia = false;
 
   Map<String, dynamic> jabodetabek = {};
   String? selectedProvinsi;
@@ -183,12 +285,15 @@ class _IsiAlamatWithMapState extends State<IsiAlamatWithMap> {
   void initState() {
     super.initState();
     _loadJSON();
+
     _marker = Marker(
       markerId: const MarkerId('pos'),
       position: _currentPosition,
       draggable: true,
       onDragEnd: (newPos) => setState(() => _currentPosition = newPos),
     );
+
+    _loadAlamatDariFirebase(); // <<< tambah ini
 
     if (widget.isNewAccount) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -202,13 +307,98 @@ class _IsiAlamatWithMapState extends State<IsiAlamatWithMap> {
     }
   }
 
+  Future<void> _loadAlamatDariFirebase() async {
+    try {
+      final doc = await FirebaseFirestore.instance
+          .collection("pelanggan")
+          .doc(widget.uid)
+          .get();
+
+      if (doc.exists && doc.data()?['alamat'] != null) {
+        final alamat = doc.data()!['alamat'];
+
+        setState(() {
+          _jalanController.text = alamat['nama_jalan'] ?? '';
+          _detailController.text = alamat['detail_jalan'] ?? '';
+
+          selectedProvinsi = alamat['provinsi'];
+          selectedKota = alamat['kota'];
+          selectedKecamatan = alamat['kecamatan'];
+          selectedKelurahan = alamat['kelurahan'];
+
+        if (alamat['gmaps'] != null) {
+          final latString = alamat['gmaps']['latitude'];
+          final lngString = alamat['gmaps']['longitude'];
+
+          final lat = double.tryParse(latString ?? '');
+          final lng = double.tryParse(lngString ?? '');
+
+          if (lat != null && lng != null) {
+            final pos = LatLng(lat, lng);
+
+            setState(() {
+              _currentPosition = pos;
+              _marker = Marker(
+                markerId: const MarkerId('pos'),
+                position: pos,
+                draggable: true,
+                onDragEnd: (newPos) => _currentPosition = newPos,
+              );
+            });
+
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              if (_mapController != null) {
+                _mapController!.animateCamera(
+                  CameraUpdate.newLatLngZoom(pos, 16),
+                );
+              }
+            });
+          }
+        }
+          _alamatTersedia = true;
+          _updateAlamatRingkasan(); 
+        });
+      } else {
+        setState(() {
+          _alamatTersedia = false;
+        });
+      }
+    } catch (e) {
+      print("Gagal load alamat: $e");
+    }
+
+    // Popup untuk akun baru, tetap di luar setState
+    if (widget.isNewAccount) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        showAwesomePopupAutoClose(
+          title: "Berhasil!",
+          message: "Akun berhasil dibuat",
+          icon: Icons.check_circle,
+          color: Colors.green,
+        );
+      });
+    }
+  }
+
+
   @override
   void dispose() {
     _jalanController.dispose();
     _detailController.dispose();
     _mapController?.dispose();
+    _alamatRingkasanController.dispose();
     super.dispose();
   }
+
+  void _updateAlamatRingkasan() {
+    _alamatRingkasanController.text = [
+      if (selectedProvinsi != null) selectedProvinsi,
+      if (selectedKota != null) selectedKota,
+      if (selectedKecamatan != null) selectedKecamatan,
+      if (selectedKelurahan != null) selectedKelurahan,
+    ].join("\n");
+  }
+
 
   Future<void> _loadJSON() async {
     final data = await rootBundle.loadString('assets/jabodetabek.json');
@@ -321,7 +511,9 @@ class _IsiAlamatWithMapState extends State<IsiAlamatWithMap> {
     setState(() => _isLoading = true);
 
     try {
-      final docRef = FirebaseFirestore.instance.collection("pelanggan").doc(widget.uid);
+      final docRef = FirebaseFirestore.instance
+          .collection("pelanggan")
+          .doc(widget.uid);
 
       final docSnapshot = await docRef.get();
 
@@ -387,7 +579,6 @@ class _IsiAlamatWithMapState extends State<IsiAlamatWithMap> {
     }
   }
 
-
   Widget _field(
     String label, {
     TextEditingController? controller,
@@ -406,8 +597,9 @@ class _IsiAlamatWithMapState extends State<IsiAlamatWithMap> {
         labelText: label,
         labelStyle: const TextStyle(
           fontFamily: 'Poppins',
-          fontSize: 14,
+          fontSize: 18,
           color: Color(0xFF0C3345),
+          fontWeight: FontWeight.w600,
         ),
         filled: true,
         fillColor: Colors.white,
@@ -426,20 +618,44 @@ class _IsiAlamatWithMapState extends State<IsiAlamatWithMap> {
   }
 
   Widget _alamatRingkasan() {
-    String displayText() {
-      List<String> parts = [];
-      if (selectedProvinsi != null) parts.add(selectedProvinsi!);
-      if (selectedKota != null) parts.add(selectedKota!);
-      if (selectedKecamatan != null) parts.add(selectedKecamatan!);
-      if (selectedKelurahan != null) parts.add(selectedKelurahan!);
-      return parts.join(",\n");
-    }
+    return TextFormField(
+      readOnly: true,
+      maxLines: 4, // supaya bisa multi-baris
+      style: const TextStyle(
+        fontSize: 14,
+        color: Color(0xFF0C3345),
+        fontFamily: 'Poppins',
+      ),
+      decoration: InputDecoration(
+        labelText: "Provinsi/Kota/Kecamatan/Kelurahan",
+        labelStyle: const TextStyle(
+          fontFamily: 'Poppins',
+          fontSize: 18,
+          color: Color(0xFF0C3345),
+          fontWeight: FontWeight.w600,
+        ),
+        floatingLabelBehavior: FloatingLabelBehavior.auto,
+        filled: true,
+        fillColor: Colors.white,
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: 20,
+          vertical: 16,
+        ),
+        border: authOutlineInputBorder,
+        enabledBorder: authOutlineInputBorder,
+        focusedBorder: authOutlineInputBorder.copyWith(
+          borderSide: const BorderSide(color: Color(0xFF0C3345)),
+        ),
+        suffixIcon: const Icon(Icons.arrow_forward_ios, size: 16), // <<< icon >
+      ),
 
-    return GestureDetector(
+      controller: _alamatRingkasanController,
+
       onTap: () async {
         final result = await showModalBottomSheet<Map<String, String>>(
           context: context,
           isScrollControlled: true,
+          backgroundColor: Colors.white,
           builder: (context) => PilihAlamatSheet(
             jabodetabek: jabodetabek,
             selected: {
@@ -457,9 +673,11 @@ class _IsiAlamatWithMapState extends State<IsiAlamatWithMap> {
             selectedKota = result['kota'];
             selectedKecamatan = result['kecamatan'];
             selectedKelurahan = result['kelurahan'];
+
+            _updateAlamatRingkasan();
           });
 
-          // Simpan ke Firebase karena user sudah login
+          // Simpan ke Firebase
           await FirebaseFirestore.instance
               .collection("pelanggan")
               .doc(widget.uid)
@@ -477,37 +695,10 @@ class _IsiAlamatWithMapState extends State<IsiAlamatWithMap> {
                     "link": _gmapsLink(),
                   },
                 },
-                "updated_at": FieldValue.serverTimestamp(), // <<< ini di root
+                "updated_at": FieldValue.serverTimestamp(),
               }, SetOptions(merge: true));
         }
-
-        if (result != null) {
-          setState(() {
-            selectedProvinsi = result['provinsi'];
-            selectedKota = result['kota'];
-            selectedKecamatan = result['kecamatan'];
-            selectedKelurahan = result['kelurahan'];
-          });
-        }
       },
-      child: Container(
-        width: double.infinity,
-        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(10),
-          border: Border.all(color: const Color(0xFFD0D0D0)),
-        ),
-        child: Text(
-          selectedProvinsi == null ? "Provinsi/Kota/Kecamatan/Kelurahan" : displayText(),
-          style: const TextStyle(
-            fontSize: 14,
-            color: Color(0xFF0C3345),
-            fontFamily: 'Poppins',
-          ),
-          softWrap: true,
-        ),
-      ),
     );
   }
 
@@ -526,7 +717,6 @@ class _IsiAlamatWithMapState extends State<IsiAlamatWithMap> {
                 // Ganti row AppBar jadi Column biar bisa atur jarak atas
                 Column(
                   children: [
-                    const SizedBox(height: 24), // ⚡ jarak dari atas layar
                     Row(
                       children: [
                         Container(
@@ -535,7 +725,8 @@ class _IsiAlamatWithMapState extends State<IsiAlamatWithMap> {
                             shape: BoxShape.circle,
                           ),
                           child: IconButton(
-                            icon: const Icon(Icons.arrow_back),
+                            icon: const Icon(Icons.arrow_back, color: Color(0xFF0C3345),
+                                size: 28),
                             onPressed: () => Navigator.pop(context),
                           ),
                         ),
@@ -544,9 +735,10 @@ class _IsiAlamatWithMapState extends State<IsiAlamatWithMap> {
                           child: Center(
                             // ⚡ center horizontal
                             child: Text(
-                              "Isi Alamat",
+                              "Alamat",
                               style: const TextStyle(
                                 color: Color(0xFF0C3345),
+                                fontFamily: 'Poppins',
                                 fontSize: 24,
                                 fontWeight: FontWeight.w700,
                               ),
@@ -562,46 +754,56 @@ class _IsiAlamatWithMapState extends State<IsiAlamatWithMap> {
                   ],
                 ),
 
-                const SizedBox(height: 12),
+                const SizedBox(height: 14),
 
-                // Google Map
-                Container(
-                  height: 200,
-                  clipBehavior: Clip.antiAlias,
-                  decoration: BoxDecoration(
+                // ================= MAP =================
+                Card(
+                  shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(12),
-                    border: Border.all(color: const Color(0xFFD0D0D0)),
                   ),
-                  child: GoogleMap(
-                    initialCameraPosition: CameraPosition(
-                      target: _currentPosition,
-                      zoom: 15,
+                  elevation: 2,
+                  clipBehavior: Clip.antiAlias,
+                  child: SizedBox(
+                    height: 220,
+                    child: GoogleMap(
+                      initialCameraPosition: CameraPosition(
+                        target: _currentPosition,
+                        zoom: 15,
+                      ),
+                      markers: _marker != null ? {_marker!} : {},
+                      onMapCreated: (GoogleMapController ctrl) {
+                        _mapController = ctrl;
+                        _mapReady = true;
+                        if (_controllerValid) {
+                          _mapController!.animateCamera(
+                            CameraUpdate.newLatLngZoom(_currentPosition, 16),
+                          );
+                        }
+                      },
+                      onTap: (pos) {
+                        setState(() {
+                          _currentPosition = pos;
+                          _marker = Marker(
+                            markerId: const MarkerId('pos'),
+                            position: pos,
+                            draggable: true,
+                            onDragEnd: (newPos) => _currentPosition = newPos,
+                          );
+                        });
+                      },
+                      myLocationEnabled: _locationGranted, // gunakan boolean lokasi
+                      zoomControlsEnabled: false,
+                      myLocationButtonEnabled: false,
                     ),
-                    markers: _marker != null ? {_marker!} : {},
-                    onMapCreated: (c) => _mapController = c,
-                    onTap: (pos) {
-                      setState(() {
-                        _currentPosition = pos;
-                        _marker = Marker(
-                          markerId: const MarkerId('pos'),
-                          position: pos,
-                          draggable: true,
-                          onDragEnd: (newPos) => _currentPosition = newPos,
-                        );
-                      });
-                    },
-                    myLocationEnabled: true,
-                    myLocationButtonEnabled: false,
-                    zoomControlsEnabled: false,
                   ),
                 ),
 
-                const SizedBox(height: 12),
+                const SizedBox(height: 14),
                 Row(
                   children: [
                     Expanded(
-                      child: OutlinedButton.icon(
-                        onPressed: _gettingLocation
+                      child:OutlinedButton.icon(
+                        onPressed: !_mapReady || _gettingLocation
                             ? null
                             : () async {
                                 if (await checkAndRequestGPS(context)) {
@@ -613,7 +815,7 @@ class _IsiAlamatWithMapState extends State<IsiAlamatWithMap> {
                                 width: 16,
                                 height: 16,
                                 child: CircularProgressIndicator(
-                                  strokeWidth: 2,
+                                  strokeWidth: 3,
                                   color: Color(0xFF0C3345),
                                 ),
                               )
@@ -633,7 +835,6 @@ class _IsiAlamatWithMapState extends State<IsiAlamatWithMap> {
                       style: OutlinedButton.styleFrom(
                         foregroundColor: const Color(0xFF0C3345),
                         side: const BorderSide(color: Color(0xFFD0D0D0)),
-                        minimumSize: const Size(48, 48),
                       ),
                       child: const Icon(Icons.open_in_new),
                     ),
@@ -645,14 +846,13 @@ class _IsiAlamatWithMapState extends State<IsiAlamatWithMap> {
                       style: OutlinedButton.styleFrom(
                         foregroundColor: const Color(0xFF0C3345),
                         side: const BorderSide(color: Color(0xFFD0D0D0)),
-                        minimumSize: const Size(48, 48),
                       ),
                       child: const Icon(Icons.copy),
                     ),
                   ],
                 ),
 
-                const SizedBox(height: 18),
+                const SizedBox(height: 14),
                 _field(
                   "Nama Jalan/Gedung/No.Rumah",
                   controller: _jalanController,
@@ -660,14 +860,14 @@ class _IsiAlamatWithMapState extends State<IsiAlamatWithMap> {
                       ? "Nama jalan wajib diisi"
                       : null,
                 ),
-                const SizedBox(height: 12),
+                const SizedBox(height: 14),
                 _field(
                   "Detail Lainnya (Blok/Patokan)",
                   controller: _detailController,
                 ),
-                const SizedBox(height: 12),
+                const SizedBox(height: 14),
                 _alamatRingkasan(),
-                const SizedBox(height: 24),
+                const SizedBox(height: 20),
                 SizedBox(
                   width: double.infinity,
                   height: 48,
@@ -681,42 +881,46 @@ class _IsiAlamatWithMapState extends State<IsiAlamatWithMap> {
                       ),
                     ),
                     child: _isLoading
-                        ? const CircularProgressIndicator(
-                            color: Colors.white,
-                            strokeWidth: 2,
+                        ? const Center(
+                            child: CircularProgressIndicator(
+                              color: Color(0xFF0C3345),
+                              strokeWidth: 3,
+                               // ganti sesuai tema
+                            ),
                           )
                         : const Text("Simpan Alamat"),
                   ),
                 ),
                 const SizedBox(height: 12),
-                SizedBox(
-                  width: double.infinity,
-                  height: 48,
-                  child: OutlinedButton(
-                    onPressed: () {
-                      Navigator.pushAndRemoveUntil(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => HomePage(uid: widget.uid),
+                if (!_alamatTersedia) // tampilkan hanya kalau alamat belum ada
+                  SizedBox(
+                    width: double.infinity,
+                    height: 48,
+                    child: OutlinedButton(
+                      onPressed: () {
+                        Navigator.pushAndRemoveUntil(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => HomePage(uid: widget.uid),
+                          ),
+                          (route) => false,
+                        );
+                      },
+                      style: OutlinedButton.styleFrom(
+                        side: const BorderSide(color: Color(0xFF0C3345)),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8),
                         ),
-                        (route) => false, // hapus semua route sebelumnya
-                      );
-                    },
-                    style: OutlinedButton.styleFrom(
-                      side: const BorderSide(color: Color(0xFF0C3345)),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8),
                       ),
-                    ),
-                    child: const Text(
-                      "Lewati",
-                      style: TextStyle(
-                        color: Color(0xFF0C3345),
-                        fontWeight: FontWeight.w500,
+                      child: const Text(
+                        "Lewati",
+                        style: TextStyle(
+                          color: Color(0xFF0C3345),
+                          fontWeight: FontWeight.w500,
+                        ),
                       ),
                     ),
                   ),
-                ),
                 const SizedBox(height: 14),
               ],
             ),
@@ -789,141 +993,143 @@ class _PilihAlamatSheetState extends State<PilihAlamatSheet> {
 
   @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      padding: const EdgeInsets.symmetric(horizontal: 16),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          const SizedBox(height: 12),
+    return Container(
+      color: Colors.white,
+      child: SingleChildScrollView(
+        padding: const EdgeInsets.symmetric(horizontal: 16),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const SizedBox(height: 12),
 
-          // --- Handle Modal Sheet Indicator ---
-          Container(
-            width: 40,
-            height: 5,
-            decoration: BoxDecoration(
-              color: Colors.grey[400],
-              borderRadius: BorderRadius.circular(10),
+            // --- Handle Modal Sheet Indicator ---
+            Container(
+              width: 40,
+              height: 5,
+              decoration: BoxDecoration(
+                color: Colors.grey[400],
+                borderRadius: BorderRadius.circular(10),
+              ),
             ),
-          ),
 
-          const SizedBox(height: 20),
+            const SizedBox(height: 20),
 
-          // ===============================
-          //            PROVINSI
-          // ===============================
-          buildDropdown(
-            label: "Provinsi",
-            value: _getValidValue(provinsi, widget.jabodetabek.keys.toList()),
-            items: widget.jabodetabek.keys.toList(),
-            onChanged: (val) {
-              setState(() {
-                provinsi = val;
-                kota = null;
-                kecamatan = null;
-                kelurahan = null;
-              });
-            },
-          ),
-
-          const SizedBox(height: 14),
-
-          // ===============================
-          //            KOTA
-          // ===============================
-          if (provinsi != null)
+            // ===============================
+            //            PROVINSI
+            // ===============================
             buildDropdown(
-              label: "Kota / Kabupaten",
-              value: _getValidValue(kota, _getKotaList(provinsi!)),
-              items: _getKotaList(provinsi!),
+              label: "Provinsi",
+              value: _getValidValue(provinsi, widget.jabodetabek.keys.toList()),
+              items: widget.jabodetabek.keys.toList(),
               onChanged: (val) {
                 setState(() {
-                  kota = val;
+                  provinsi = val;
+                  kota = null;
                   kecamatan = null;
                   kelurahan = null;
                 });
               },
             ),
 
-          const SizedBox(height: 14),
+            const SizedBox(height: 14),
 
-          // ===============================
-          //           KECAMATAN
-          // ===============================
-          if (provinsi != null && kota != null)
-            buildDropdown(
-              label: "Kecamatan",
-              value: _getValidValue(
-                kecamatan,
-                _getKecamatanList(provinsi!, kota!),
+            // ===============================
+            //            KOTA
+            // ===============================
+            if (provinsi != null)
+              buildDropdown(
+                label: "Kota/Kabupaten",
+                value: _getValidValue(kota, _getKotaList(provinsi!)),
+                items: _getKotaList(provinsi!),
+                onChanged: (val) {
+                  setState(() {
+                    kota = val;
+                    kecamatan = null;
+                    kelurahan = null;
+                  });
+                },
               ),
-              items: _getKecamatanList(provinsi!, kota!),
-              onChanged: (val) {
-                setState(() {
-                  kecamatan = val;
-                  kelurahan = null;
-                });
-              },
-            ),
 
-          const SizedBox(height: 14),
+            const SizedBox(height: 14),
 
-          // ===============================
-          //           KELURAHAN
-          // ===============================
-          if (provinsi != null && kota != null && kecamatan != null)
-            buildDropdown(
-              label: "Kelurahan",
-              value: _getValidValue(
-                kelurahan,
-                _getKelurahanList(provinsi!, kota!, kecamatan!),
+            // ===============================
+            //           KECAMATAN
+            // ===============================
+            if (provinsi != null && kota != null)
+              buildDropdown(
+                label: "Kecamatan",
+                value: _getValidValue(
+                  kecamatan,
+                  _getKecamatanList(provinsi!, kota!),
+                ),
+                items: _getKecamatanList(provinsi!, kota!),
+                onChanged: (val) {
+                  setState(() {
+                    kecamatan = val;
+                    kelurahan = null;
+                  });
+                },
               ),
-              items: _getKelurahanList(provinsi!, kota!, kecamatan!),
-              onChanged: (val) {
-                setState(() {
-                  kelurahan = val;
-                });
-              },
-            ),
 
-          const SizedBox(height: 24),
+            const SizedBox(height: 14),
 
-          // ===============================
-          //           BUTTON SIMPAN
-          // ===============================
-          SizedBox(
-            width: double.infinity,
-            height: 48, // tinggi sama kaya tombol lain
-            child: ElevatedButton(
-              onPressed: (provinsi != null &&
-                      kota != null &&
-                      kecamatan != null &&
-                      kelurahan != null)
-                  ? () {
-                      Navigator.pop(context, {
-                        "provinsi": provinsi ?? "",
-                        "kota": kota ?? "",
-                        "kecamatan": kecamatan ?? "",
-                        "kelurahan": kelurahan ?? "",
-                      });
-                    }
-                  : null,
-              style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFF0C3345),
-                foregroundColor: Colors.white,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8),
+            // ===============================
+            //           KELURAHAN
+            // ===============================
+            if (provinsi != null && kota != null && kecamatan != null)
+              buildDropdown(
+                label: "Kelurahan",
+                value: _getValidValue(
+                  kelurahan,
+                  _getKelurahanList(provinsi!, kota!, kecamatan!),
+                ),
+                items: _getKelurahanList(provinsi!, kota!, kecamatan!),
+                onChanged: (val) {
+                  setState(() {
+                    kelurahan = val;
+                  });
+                },
+              ),
+
+            const SizedBox(height: 24),
+
+            // ===============================
+            //           BUTTON SIMPAN
+            // ===============================
+            SizedBox(
+              width: double.infinity,
+              height: 48, // tinggi sama kaya tombol lain
+              child: ElevatedButton(
+                onPressed:
+                    (provinsi != null &&
+                        kota != null &&
+                        kecamatan != null &&
+                        kelurahan != null)
+                    ? () {
+                        Navigator.pop(context, {
+                          "provinsi": provinsi ?? "",
+                          "kota": kota ?? "",
+                          "kecamatan": kecamatan ?? "",
+                          "kelurahan": kelurahan ?? "",
+                        });
+                      }
+                    : null,
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color(0xFF0C3345),
+                  foregroundColor: Colors.white,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                ),
+                child: const Text(
+                  "Simpan Pilihan",
+                  style: TextStyle(fontWeight: FontWeight.w500, fontSize: 16),
                 ),
               ),
-              child: const Text(
-                "Simpan Pilihan",
-                style: TextStyle(
-                  fontWeight: FontWeight.w500,
-                ),
-              ),
             ),
-          ),
-          const SizedBox(height: 24),
-        ],
+            const SizedBox(height: 24),
+          ],
+        ),
       ),
     );
   }
@@ -948,8 +1154,9 @@ class _PilihAlamatSheetState extends State<PilihAlamatSheet> {
         labelText: label,
         labelStyle: const TextStyle(
           fontFamily: 'Poppins',
-          fontSize: 14,
+          fontSize: 18,
           color: Color(0xFF0C3345),
+          fontWeight: FontWeight.w600,
         ),
         filled: true,
         fillColor: Colors.white,

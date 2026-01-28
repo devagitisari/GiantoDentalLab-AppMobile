@@ -21,7 +21,7 @@ class _SignInScreenState extends State<SignInScreen> {
       color: Colors.black.withOpacity(0.4),
       child: const Center(
         child: CircularProgressIndicator(
-          color: Color(0xFF0C3345),
+          color: Colors.white,
           strokeWidth: 3,
         ),
       ),
@@ -87,7 +87,7 @@ class _SignInScreenState extends State<SignInScreen> {
                 color: Colors.black.withOpacity(0.4),
                 child: const Center(
                   child: CircularProgressIndicator(
-                    color: Color(0xFF0C3345),
+                    color: Colors.white,
                     strokeWidth: 3,
                   ),
                 ),
@@ -122,6 +122,8 @@ class SignInForm extends StatefulWidget {
 }
 
 class _SignInFormState extends State<SignInForm> {
+  final String defaultPhotoUrl =
+    "https://i.ibb.co/4pDNDk1/default-profile.png";
   final _namaController = TextEditingController();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
@@ -129,6 +131,28 @@ class _SignInFormState extends State<SignInForm> {
 
   bool _isLoading = false;
   bool _obscurePassword = true;
+
+  Future<String> generateUniqueUsername(String nama) async {
+    String base = nama.toLowerCase().replaceAll(" ", "");
+    String username = "";         // <-- deklarasi di luar while
+    bool exists = true;
+
+    while (exists) {
+      int randomNum = DateTime.now().millisecondsSinceEpoch % 10000;
+      username = "$base$randomNum";   // <-- assign sini, bukan deklarasi baru
+
+      final check = await FirebaseFirestore.instance
+          .collection("pelanggan")
+          .where("username", isEqualTo: username)
+          .get();
+
+      exists = check.docs.isNotEmpty;
+    }
+
+    return username;               // <-- jadi aman, tidak merah
+  }
+
+
 
   void showPasswordInfo() {
     showDialog(
@@ -226,22 +250,26 @@ class _SignInFormState extends State<SignInForm> {
   Color strengthColor = Colors.red;
   double strengthValue = 0.0; // 0.33 / 0.66 / 1.0
 
-  void showAwesomePopup({
+  void showAwesomePopupAutoClose({
     required String title,
     required String message,
     Color color = const Color(0xFF0C3345),
-    IconData icon = Icons.info,
+    IconData icon = Icons.check_circle,
   }) {
     showDialog(
       context: context,
       barrierDismissible: false,
       builder: (_) {
+        // Auto close dialog setelah 1.2 detik
+        Future.delayed(const Duration(milliseconds: 1200), () {
+          if (Navigator.canPop(context)) Navigator.pop(context);
+        });
+
         return Dialog(
           backgroundColor: Colors.transparent,
           child: Stack(
             alignment: Alignment.center,
             children: [
-              // Glass card
               Container(
                 margin: const EdgeInsets.only(top: 40),
                 padding: const EdgeInsets.symmetric(
@@ -283,41 +311,16 @@ class _SignInFormState extends State<SignInForm> {
                         color: Colors.black87,
                       ),
                     ),
-                    const SizedBox(height: 20),
-                    ElevatedButton(
-                      onPressed: () => Navigator.pop(context),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: color,
-                        foregroundColor: Colors.white,
-                        minimumSize: const Size(120, 45),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                      ),
-                      child: const Text(
-                        "Mengerti",
-                        style: TextStyle(
-                          fontFamily: 'Poppins',
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                    ),
+                    const SizedBox(height: 10),
                   ],
                 ),
               ),
-
-              // Icon floating circle
               Positioned(
                 top: 0,
                 child: CircleAvatar(
                   radius: 40,
                   backgroundColor: Colors.grey.shade300,
-                  child: Padding(
-                    padding: const EdgeInsets.only(
-                      top: 2,
-                    ), // kecil aja biar visual center
-                    child: Icon(icon, color: color, size: 50),
-                  ),
+                  child: Icon(icon, color: color, size: 50),
                 ),
               ),
             ],
@@ -373,7 +376,7 @@ class _SignInFormState extends State<SignInForm> {
 
     // ❌ Validasi field kosong
     if (nama.isEmpty || email.isEmpty || telp.isEmpty || password.isEmpty) {
-      showAwesomePopup(
+      showAwesomePopupAutoClose(
         title: "Data Belum Lengkap",
         message: "Harap isi semua field sebelum melanjutkan.",
         color: Colors.red,
@@ -384,7 +387,7 @@ class _SignInFormState extends State<SignInForm> {
 
     // Validasi email
     if (!RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(email)) {
-      showAwesomePopup(
+      showAwesomePopupAutoClose(
         title: "Email Tidak Valid",
         message: "Masukkan format email yang benar.",
         color: Colors.red,
@@ -395,7 +398,7 @@ class _SignInFormState extends State<SignInForm> {
 
     // ❌ Validasi nomor telepon
     if (!RegExp(r'^[0-9]{10,15}$').hasMatch(telp)) {
-      showAwesomePopup(
+      showAwesomePopupAutoClose(
         title: "Nomor Telepon Tidak Valid",
         message:
             "Nomor telepon harus diawali 08 dan terdiri dari 10-15 digit angka.",
@@ -416,7 +419,7 @@ class _SignInFormState extends State<SignInForm> {
         !hasLower ||
         !hasNumber ||
         !hasSpecial) {
-      showAwesomePopup(
+      showAwesomePopupAutoClose(
         title: "Password Tidak Valid",
         message:
             "Password harus huruf kecil, huruf besar, angka dan simbol dengan minimal 8 karakter.",
@@ -445,7 +448,7 @@ class _SignInFormState extends State<SignInForm> {
           !hasSpecial) {
         setState(() => _isLoading = false);
 
-        showAwesomePopup(
+        showAwesomePopupAutoClose(
           title: "Password Tidak Valid",
           message:
               "Password harus huruf kecil, huruf besar, angka dan simbol dengan minimal 8 karakter.",
@@ -456,35 +459,50 @@ class _SignInFormState extends State<SignInForm> {
       }
 
       // buat akun
-      UserCredential userCredential = await auth.createUserWithEmailAndPassword(
+      UserCredential userCredential =
+          await auth.createUserWithEmailAndPassword(
         email: _emailController.text.trim(),
         password: _passwordController.text.trim(),
       );
+
       final user = userCredential.user;
 
-      // simpan data dasar pelanggan (belum ada alamat)
+      // 1️⃣ generate username otomatis
+      String username = await generateUniqueUsername(
+        _namaController.text.trim(),
+      );
+
+      // 2️⃣ simpan ke Firestore
       await FirebaseFirestore.instance
           .collection('pelanggan')
           .doc(user!.uid)
           .set({
-            'id_pelanggan': user.uid,
-            'nama_pelanggan': _namaController.text.trim(),
-            'email': _emailController.text.trim(),
-            'password': _passwordController.text.trim(),
-            'alamat': {
-              'detail_jalan': "",
-              'gmaps': {'latitude': "", 'longitude': "", 'link': ""},
-              'kecamatan': "",
-              'kelurahan': "",
-              'kota': "",
-              'nama_jalan': "",
-              'provinsi': "",
-            },
-            'no_telp': _noTelpController.text.trim(),
-            'created_at': FieldValue.serverTimestamp(),
-          });
+        'id_pelanggan': user.uid,
+        'nama_pelanggan': _namaController.text.trim(),
+        'email': _emailController.text.trim(),
+        'password': _passwordController.text.trim(),
+        'username': username,               // ⬅️ username otomatis
+        'foto_profile': defaultPhotoUrl,  // ⬅️ foto default
+        'alamat': {
+          'detail_jalan': "",
+          'gmaps': {'latitude': "", 'longitude': "", 'link': ""},
+          'kecamatan': "",
+          'kelurahan': "",
+          'kota': "",
+          'nama_jalan': "",
+          'provinsi': "",
+        },
+        'no_telp': _noTelpController.text.trim(),
+        'status_akun': 'aktif',
+        'created_at': FieldValue.serverTimestamp(),
+      });
 
-      showAwesomePopup(
+      // 3️⃣ update auth display name & photo
+      await user.updateDisplayName(_namaController.text.trim());
+      await user.updatePhotoURL(defaultPhotoUrl);
+
+
+      showAwesomePopupAutoClose(
         title: "Akun Berhasil Dibuat!",
         message: "Silakan lengkapi alamat anda untuk melanjutkan.",
         color: Colors.green,
@@ -499,7 +517,7 @@ class _SignInFormState extends State<SignInForm> {
         MaterialPageRoute(builder: (_) => IsiAlamatWithMap(uid: user.uid)),
       );
     } on FirebaseAuthException catch (e) {
-      showAwesomePopup(
+      showAwesomePopupAutoClose(
         title: "Terjadi Kesalahan",
         message: e.message ?? "Terjadi kesalahan.",
         color: Colors.red,
@@ -511,89 +529,124 @@ class _SignInFormState extends State<SignInForm> {
   }
 
   Future<void> _signInWithGoogle() async {
-    widget.onLoadingChanged?.call(true); // mulai loading
+    widget.onLoadingChanged?.call(true);
+
     try {
       final GoogleSignIn googleSignIn = GoogleSignIn();
       final GoogleSignInAccount? googleUser = await googleSignIn.signIn();
       if (googleUser == null) {
         widget.onLoadingChanged?.call(false);
-        return; // user batal login
+        return;
       }
 
       final GoogleSignInAuthentication googleAuth =
           await googleUser.authentication;
+
       final credential = GoogleAuthProvider.credential(
         accessToken: googleAuth.accessToken,
         idToken: googleAuth.idToken,
       );
 
-      // login atau register dengan credential Google
       UserCredential userCredential =
           await FirebaseAuth.instance.signInWithCredential(credential);
+
       final user = userCredential.user;
       if (user == null) throw Exception("Gagal login Google");
 
-      final docRef = FirebaseFirestore.instance.collection('pelanggan').doc(user.uid);
+      final docRef =
+          FirebaseFirestore.instance.collection('pelanggan').doc(user.uid);
+
       final docSnap = await docRef.get();
 
+      // ============= USER BARU =============
       if (!docSnap.exists) {
-        // User belum ada → buat akun baru
+        String username =
+            await generateUniqueUsername(user.displayName ?? "user");
+
         await docRef.set({
           'id_pelanggan': user.uid,
           'nama_pelanggan': user.displayName ?? '',
+          'username': username,
           'email': user.email ?? '',
-          'password': '', // kosong karena login Google
+          'password': '',
+          'foto_profile': defaultPhotoUrl,
           'alamat': {
             'detail_jalan': "",
             'gmaps': {'latitude': "", 'longitude': "", 'link': ""},
             'kecamatan': "",
             'kelurahan': "",
-            'kode_pos': "",
             'kota': "",
             'nama_jalan': "",
             'provinsi': "",
           },
           'no_telp': '',
+          'status_akun': 'aktif',
           'created_at': FieldValue.serverTimestamp(),
         });
 
-        // langsung lanjut ke isi alamat
         Navigator.pushReplacement(
           context,
-          MaterialPageRoute(builder: (_) => IsiAlamatWithMap(uid: user.uid)),
+          MaterialPageRoute(
+            builder: (_) => IsiAlamatWithMap(uid: user.uid),
+          ),
         );
         return;
       }
 
-      // User sudah ada → ambil data alamat
-      final data = docSnap.data() != null ? Map<String, dynamic>.from(docSnap.data()!) : {};
-      final alamat = data['alamat'] as Map<String, dynamic>? ?? {};
+      // ============= USER SUDAH ADA =============
+      final data = Map<String, dynamic>.from(docSnap.data()!);
 
+      // 🔹 CEK STATUS AKUN
+      final status = data['status_akun'] ?? 'aktif';
+      if (status == 'nonaktif') {
+        widget.onLoadingChanged?.call(false);
+        showAwesomePopupAutoClose(
+          title: "Akun Nonaktif",
+          message: "Akun Anda saat ini nonaktif. Silakan hubungi admin.",
+          color: Colors.red,
+          icon: Icons.block,
+        );
+        return; // hentikan login
+      }
+
+      final alamat = data['alamat'] ?? {};
+
+      // 🔹 Pastikan username & foto ada
+      if (!data.containsKey('username') || data['username'] == "") {
+        String username =
+            await generateUniqueUsername(data['nama_pelanggan'] ?? "user");
+        await docRef.update({'username': username});
+      }
+
+      if (!data.containsKey('foto_profile') || data['foto_profile'] == "") {
+        await docRef.update({
+          'foto_profile': user.photoURL ?? defaultPhotoUrl,
+        });
+      }
+
+      // 🔹 Cek alamat
       if ((alamat['nama_jalan'] ?? "").isEmpty) {
-        // belum isi alamat → ke halaman isi alamat
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(builder: (_) => IsiAlamatWithMap(uid: user.uid)),
         );
       } else {
-        // sudah isi alamat → langsung HomePage
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(builder: (_) => HomePage(uid: user.uid)),
         );
       }
     } on FirebaseAuthException catch (e) {
-      showAwesomePopup(
-        title: "Gagal Membuat Akun",
+      showAwesomePopupAutoClose(
+        title: "Gagal Login",
         message: e.message ?? "Terjadi kesalahan saat login Google.",
         color: Colors.red,
         icon: Icons.warning_amber_rounded,
       );
     } finally {
-      widget.onLoadingChanged?.call(false); // stop loading
+      widget.onLoadingChanged?.call(false);
     }
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -606,7 +659,7 @@ class _SignInFormState extends State<SignInForm> {
             decoration: InputDecoration(
               hintText: "Masukkan nama",
               hintStyle: const TextStyle(
-                fontSize: 12,
+                fontSize: 13,
                 fontFamily: 'Poppins',
                 color: Color(0xFF999999),
               ),
@@ -637,7 +690,7 @@ class _SignInFormState extends State<SignInForm> {
             decoration: InputDecoration(
               hintText: "Masukkan email anda",
               hintStyle: const TextStyle(
-                fontSize: 12,
+                fontSize: 13,
                 fontFamily: 'Poppins',
                 color: Color(0xFF999999),
               ),
@@ -669,7 +722,7 @@ class _SignInFormState extends State<SignInForm> {
             decoration: InputDecoration(
               hintText: "Masukkan nomor telepon anda",
               hintStyle: const TextStyle(
-                fontSize: 12,
+                fontSize: 13,
                 fontFamily: 'Poppins',
                 color: Color(0xFF999999),
               ),
@@ -704,7 +757,7 @@ class _SignInFormState extends State<SignInForm> {
               labelText: "Password",
               hintText: "Masukan Password anda",
               hintStyle: const TextStyle(
-                fontSize: 12,
+                fontSize: 13,
                 fontFamily: 'Poppins',
                 color: Color(0xFF999999),
               ),

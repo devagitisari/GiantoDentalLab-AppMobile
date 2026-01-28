@@ -1,19 +1,19 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
 package="com.example.team_project">
+    <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
 
     <application
         android:label="team_project"
         android:name="${applicationName}"
-        android:icon="@mipmap/ic_launcher">
-
-        android:enableOnBackInvokedCallback="true"
+        android:icon="@mipmap/ic_launcher"
+        android:enableOnBackInvokedCallback="true">
 
         <!-- Taruh API key di sini, bukan di activity -->
         <meta-data
             android:name="com.google.android.geo.API_KEY"
-            android:value="AIzaSyBQtEEBfYTWY_TJ76GJeAQ5AHqtvQo5Tr0"/>
+            android:value="${MAPS_API_KEY}" />
 
         <activity
             android:name=".MainActivity"

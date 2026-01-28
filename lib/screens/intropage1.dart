@@ -66,7 +66,7 @@ class IntroPage1 extends StatelessWidget {
                           const Padding(
                             padding: EdgeInsets.symmetric(horizontal: 20),
                             child: Text(
-                              'Ahli dalam pembuatan gigi tiruan, retainer, dan layanan perawatan gigi dengan hasil alami dan berkualitas tinggi.',
+                              'Ahli dalam pembuatan gigi tiruan, retainer, dan layanan perawatan gigi dengan hasil alami dan berkualitas tinggi',
                               textAlign: TextAlign.center,
                               style: TextStyle(
                                 color: Color(0xFF0C3345),

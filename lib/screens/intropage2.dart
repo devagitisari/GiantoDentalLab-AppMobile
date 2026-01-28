@@ -11,7 +11,7 @@ class IntroPage2 extends StatelessWidget {
         height: double.infinity,
         decoration: const BoxDecoration(
           image: DecorationImage(
-            image: AssetImage('assets/images/imgIntroPage2.jpg'),
+            image: AssetImage('assets/images/imgIntroPage2.jpeg'),
             fit: BoxFit.cover,
           ),
         ),

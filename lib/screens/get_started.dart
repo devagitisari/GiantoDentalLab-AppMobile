@@ -18,16 +18,42 @@ class GetStarted extends StatefulWidget {
 class _GetStartedState extends State<GetStarted> {
   bool isLoading = false;
 
-  void showAwesomePopup({
+  Future<String> generateUniqueUsername(String nama) async {
+    String base = nama.toLowerCase().replaceAll(" ", "");
+    String username = "";
+    bool exists = true;
+
+    while (exists) {
+      int randomNum = DateTime.now().millisecondsSinceEpoch % 10000;
+      username = "$base$randomNum";
+
+      final check = await FirebaseFirestore.instance
+          .collection('pelanggan')
+          .where('username', isEqualTo: username)
+          .get();
+
+      exists = check.docs.isNotEmpty;
+    }
+
+    return username;
+  }
+
+
+  void showAwesomePopupAutoClose({
     required String title,
     required String message,
     Color color = const Color(0xFF0C3345),
-    IconData icon = Icons.info,
+    IconData icon = Icons.check_circle,
   }) {
     showDialog(
       context: context,
-      barrierDismissible: false, // ⬅ TARUH DI SINI
+      barrierDismissible: false,
       builder: (_) {
+        // Auto close dialog setelah 1.2 detik
+        Future.delayed(const Duration(milliseconds: 1200), () {
+          if (Navigator.canPop(context)) Navigator.pop(context);
+        });
+
         return Dialog(
           backgroundColor: Colors.transparent,
           child: Stack(
@@ -74,25 +100,7 @@ class _GetStartedState extends State<GetStarted> {
                         color: Colors.black87,
                       ),
                     ),
-                    const SizedBox(height: 20),
-                    ElevatedButton(
-                      onPressed: () => Navigator.pop(context),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: color,
-                        foregroundColor: Colors.white,
-                        minimumSize: const Size(120, 45),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                      ),
-                      child: const Text(
-                        "Mengerti",
-                        style: TextStyle(
-                          fontFamily: 'Poppins',
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                    ),
+                    const SizedBox(height: 10),
                   ],
                 ),
               ),
@@ -129,24 +137,31 @@ class _GetStartedState extends State<GetStarted> {
         idToken: googleAuth.idToken,
       );
 
-      UserCredential userCredential = await FirebaseAuth.instance
-          .signInWithCredential(credential);
+      UserCredential userCredential =
+          await FirebaseAuth.instance.signInWithCredential(credential);
 
       final user = userCredential.user;
       if (user == null) throw Exception("User null");
 
-      final docRef = FirebaseFirestore.instance
-          .collection('pelanggan')
-          .doc(user.uid);
+      final docRef =
+          FirebaseFirestore.instance.collection('pelanggan').doc(user.uid);
       final docSnap = await docRef.get();
 
-      // Buat data baru jika belum ada
+      // ==========================================================
+      // 🔰 USER BARU → Buat username + foto profile default
+      // ==========================================================
       if (!docSnap.exists) {
+        String username =
+            await generateUniqueUsername(user.displayName ?? "user");
+
         await docRef.set({
           'id_pelanggan': user.uid,
           'nama_pelanggan': user.displayName ?? '',
+          'username': username,
           'email': user.email,
-          'password': '',
+          'password': '', // google tidak punya password
+          'foto_profile': 
+              "https://i.ibb.co/7z7FQ5k/default-profile.png",
           'alamat': {
             'detail_jalan': "",
             'gmaps': {'latitude': "", 'longitude': "", 'link': ""},
@@ -157,16 +172,53 @@ class _GetStartedState extends State<GetStarted> {
             'provinsi': "",
           },
           'no_telp': '',
+          'status_akun': 'aktif',
           'created_at': FieldValue.serverTimestamp(),
         });
       }
 
+      // Ambil data terbaru
       final data = (await docRef.get()).data()!;
+
+      // ==========================================================
+      // 🔰 CEK STATUS AKUN
+      // ==========================================================
+      final status = data['status_akun'] ?? 'aktif';
+      if (status == 'nonaktif') {
+        setState(() => isLoading = false);
+        showAwesomePopupAutoClose(
+          title: "Akun Nonaktif",
+          message: "Akun Anda saat ini nonaktif. Silakan hubungi admin.",
+          color: Colors.red,
+          icon: Icons.block,
+        );
+        return; // hentikan login
+      }
+
+      // ==========================================================
+      // 🔰 USER SUDAH ADA → pastikan username & foto_profile ada
+      // ==========================================================
+      if (!data.containsKey('username') || data['username'] == "") {
+        String username =
+            await generateUniqueUsername(data['nama_pelanggan'] ?? "user");
+        await docRef.update({'username': username});
+      }
+
+      if (!data.containsKey('foto_profile') || data['foto_profile'] == "") {
+        await docRef.update({
+          'foto_profile': 
+              user.photoURL ?? "https://i.ibb.co/7z7FQ5k/default-profile.png"
+        });
+      }
+
+      // ==========================================================
+      // 🔰 CEK ALAMAT untuk routing
+      // ==========================================================
       final alamat = (data['alamat'] ?? {}) as Map<String, dynamic>;
 
       setState(() => isLoading = false);
 
-      if (alamat['nama_jalan'] == null || alamat['nama_jalan'] == "") {
+      if ((alamat['nama_jalan'] ?? "").isEmpty) {
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(builder: (_) => IsiAlamatWithMap(uid: user.uid)),
@@ -179,7 +231,7 @@ class _GetStartedState extends State<GetStarted> {
       }
     } catch (error) {
       setState(() => isLoading = false);
-      showAwesomePopup(
+      showAwesomePopupAutoClose(
         title: "Gagal Login Google",
         message: "$error",
         color: Colors.red,
@@ -187,6 +239,8 @@ class _GetStartedState extends State<GetStarted> {
       );
     }
   }
+
+
 
   @override
   Widget build(BuildContext context) {
