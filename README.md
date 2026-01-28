@@ -17,7 +17,4 @@ The app provides a user-friendly interface for clients to schedule, track, and m
 - **Firebase** for authentication, real-time database, and cloud storage  
 - **Cloudinary** for image uploads (if applicable)  
 
-Author by 
-Deva Gitisari
-Nayla Natania Putri
-Restu Putri Nisrina
+Author by Deva Gitisari, Nayla Natania Putri & Restu Putri Nisrina
